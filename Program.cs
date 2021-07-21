@@ -23,7 +23,7 @@ namespace WalletApp
         {
 
             ConfigureDependecyInjection();
-            //await walletTransactionService.DepositMoney(100000035644, 1500);
+            await walletTransactionService.DepositMoney(100000035644, 1500);
             //await walletTransactionService.TransferMoney(100000035644, 626829010175, 500);
             //await walletTransactionService.WithdrawMoney(626829010175, 50);
            

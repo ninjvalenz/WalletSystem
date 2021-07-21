@@ -15,7 +15,7 @@ namespace WalletApp.Model.ViewModel
             }
             set
             {
-                Message = value;
+                message = value;
             }
 
         }
