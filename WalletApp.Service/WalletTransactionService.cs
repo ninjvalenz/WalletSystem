@@ -88,6 +88,9 @@ namespace WalletApp.Service
 
             try
             {
+                if (amount <= 0) throw new TooLowAmountException();
+                if (amount > 99999999) throw new MaximumAllowableAmountException();
+                
                 await dBService.ExecuteNonQuery("DepositMoney", new SqlParameter[]
                     {
                         new SqlParameter() { ParameterName = "AccountNumber", Value = accountNumber },
@@ -112,6 +115,9 @@ namespace WalletApp.Service
 
             try
             {
+                if (amount <= 0) throw new TooLowAmountException();
+                if (amount > 99999999) throw new MaximumAllowableAmountException();
+
                 var domainResult = await dBService.ExecuteQuery("WithdrawMoney", new SqlParameter[]
                     {
                         new SqlParameter() { ParameterName = "AccountNumber", Value = accountNumber },
@@ -143,6 +149,9 @@ namespace WalletApp.Service
 
             try
             {
+                if (amount <= 0) throw new TooLowAmountException();
+                if (amount > 99999999) throw new MaximumAllowableAmountException();
+
                 var domainResult = await dBService.ExecuteQuery("TransferMoney", new SqlParameter[]
                     {
                         new SqlParameter() { ParameterName = "AccountNumber", Value = accountNumber },
