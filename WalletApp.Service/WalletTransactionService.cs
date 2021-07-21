@@ -110,36 +110,56 @@ namespace WalletApp.Service
         {
             WithdrawMoneyViewModel withdrawMoneyViewModel = new WithdrawMoneyViewModel();
 
-           // try
-           // {
-           //     using (SqlConnection connection =
-           //new SqlConnection(dbConnection.ConnectionString))
-           //     {
-           //         await connection.OpenAsync();
+            // try
+            // {
+            //     using (SqlConnection connection =
+            //new SqlConnection(dbConnection.ConnectionString))
+            //     {
+            //         await connection.OpenAsync();
 
-           //         using (SqlCommand command = new SqlCommand("WithdrawMoney", connection))
-           //         {
-           //             command.CommandType = CommandType.StoredProcedure;
-           //             command.Parameters.AddWithValue("@AccountNumber", accountNumber);
-           //             command.Parameters.AddWithValue("@Amount", amount);
+            //         using (SqlCommand command = new SqlCommand("WithdrawMoney", connection))
+            //         {
+            //             command.CommandType = CommandType.StoredProcedure;
+            //             command.Parameters.AddWithValue("@AccountNumber", accountNumber);
+            //             command.Parameters.AddWithValue("@Amount", amount);
 
-           //             using (SqlDataReader sqlDataReader = await command.ExecuteReaderAsync())
-           //             {
-           //                 if (await sqlDataReader.ReadAsync())
-           //                 {
-           //                     if (!sqlDataReader.GetFieldValue<bool>("IsSuccess"))
-           //                         throw new InsufficientWalletBalanceException();
-           //                 }
-           //             }
-           //         }
-           //     }
+            //             using (SqlDataReader sqlDataReader = await command.ExecuteReaderAsync())
+            //             {
+            //                 if (await sqlDataReader.ReadAsync())
+            //                 {
+            //                     if (!sqlDataReader.GetFieldValue<bool>("IsSuccess"))
+            //                         throw new InsufficientWalletBalanceException();
+            //                 }
+            //             }
+            //         }
+            //     }
 
-           // }
-           // catch (Exception ex)
-           // {
-           //     withdrawMoneyViewModel.Message = ex.Message;
-           // }
+            // }
+            // catch (Exception ex)
+            // {
+            //     withdrawMoneyViewModel.Message = ex.Message;
+            // }
+            try
+            {
+                var domainResult = await dBService.ExecuteQuery("WithdrawMoney", new SqlParameter[]
+                    {
+                        new SqlParameter() { ParameterName = "AccountNumber", Value = accountNumber },
+                        new SqlParameter() { ParameterName = "Amount", Value = amount }
+                    }, CommandType.StoredProcedure);
 
+                if (domainResult != null &&
+                    domainResult.Rows != null &&
+                    domainResult.Rows.Count > 0)
+                {
+                    if(!(bool)domainResult.Rows[0]["IsSuccess"])
+                        throw new InsufficientWalletBalanceException();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                withdrawMoneyViewModel.Message = ex.Message;
+            }
             return withdrawMoneyViewModel;
         }
 

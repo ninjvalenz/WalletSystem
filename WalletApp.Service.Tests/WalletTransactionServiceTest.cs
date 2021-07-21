@@ -118,6 +118,41 @@ namespace WalletApp.Service.Tests
 
         }
 
+        [Test]
+        public void WithdrawMoney_Returns_WithdrawMoneyViewModel_NotSuccess()
+        {
+            var service = GetWalletTransactionService();
+            //Arrange
+            dbService.Setup(x => x.ExecuteQuery(It.IsAny<string>(), It.IsAny<SqlParameter[]>(), It.IsAny<CommandType>()).Result)
+                .Returns(GenerateNotSuccessCredit());
+
+            //Act
+            var result = service.WithdrawMoney(It.IsAny<long>(), It.IsAny<decimal>()).Result;
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.AreEqual(result.IsSuccess, false);
+            Assert.AreEqual(result.Message, "Insufficient balance on the wallet!");
+
+        }
+
+        [Test]
+        public void WithdrawMoney_Returns_WithdrawMoneyViewModel_Success()
+        {
+            var service = GetWalletTransactionService();
+            //Arrange
+            dbService.Setup(x => x.ExecuteQuery(It.IsAny<string>(), It.IsAny<SqlParameter[]>(), It.IsAny<CommandType>()).Result)
+                .Returns(GenerateSuccessCredit());
+
+            //Act
+            var result = service.WithdrawMoney(It.IsAny<long>(), It.IsAny<decimal>()).Result;
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.AreEqual(result.IsSuccess, true);
+            Assert.IsNull(result.Message);
+
+        }
 
         #region GenerateTransactionHistoryMock
         public DataTable GenerateTransactionHistoryMock()
@@ -152,6 +187,29 @@ namespace WalletApp.Service.Tests
             row3["TransactionDate"] = DateTime.Now;
             row3["EndBalance"] = 1000;
             dt.Rows.Add(row3);
+
+            return dt;
+        }
+        public DataTable GenerateSuccessCredit()
+        {
+            DataTable dt = new DataTable();
+            dt.Columns.Add(new DataColumn() { ColumnName = "IsSuccess", DataType = typeof(bool) });
+
+            DataRow row1 = dt.NewRow();
+            row1["IsSuccess"] = true;
+            dt.Rows.Add(row1);
+
+            return dt;
+        }
+
+        public DataTable GenerateNotSuccessCredit()
+        {
+            DataTable dt = new DataTable();
+            dt.Columns.Add(new DataColumn() { ColumnName = "IsSuccess", DataType = typeof(bool) });
+
+            DataRow row1 = dt.NewRow();
+            row1["IsSuccess"] = false;
+            dt.Rows.Add(row1);
 
             return dt;
         }
