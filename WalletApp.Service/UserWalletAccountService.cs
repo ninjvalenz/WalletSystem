@@ -3,6 +3,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
 using WalletApp.Model.ViewModel;
+using WalletApp.Model.ViewModel.Exceptions;
 using WalletApp.Service.ConnectionStrings;
 using WalletApp.Service.Helper;
 using WalletApp.Service.Interface;
@@ -12,10 +13,10 @@ namespace WalletApp.Service
     
     public class UserWalletAccountService : IUserWalletAccountService
     {
-        ISequelConnection dbConnection;
-        public UserWalletAccountService(ISequelConnection _dbConnection)
+        IDBService dBService;
+        public UserWalletAccountService(IDBService _dBService)
         {
-            dbConnection = _dbConnection;
+            dBService = _dBService;
 
         }
 
@@ -25,26 +26,14 @@ namespace WalletApp.Service
 
             try
             {
-                using (SqlConnection connection =
-               new SqlConnection(dbConnection.ConnectionString))
-                {
-                    await connection.OpenAsync();
-
-                    using (SqlCommand command = new SqlCommand("RegisterWallet", connection))
+               var domainResult = await dBService.ExecuteQuery("RegisterWallet", new SqlParameter[]
                     {
-                        command.CommandType = CommandType.StoredProcedure;
-                        command.Parameters.AddWithValue("@UserSecurityId", userSecurityId);
+                        new SqlParameter() { ParameterName = "UserSecurityId", Value = userSecurityId }
+                    }, CommandType.StoredProcedure);
 
-                        using (SqlDataReader sqlDataReader = await command.ExecuteReaderAsync())
-                        {
-                            while (await sqlDataReader.ReadAsync())
-                            {
-                                registerWalletViewModel = sqlDataReader.GetFieldValue<long>("AccountNumber").ToViewModel();
-                            }
-                        }
-                    }
-                }
-
+                if (domainResult != null && domainResult.Rows != null && domainResult.Rows.Count > 0)
+                    registerWalletViewModel = domainResult.RegisterWalletViewModel();
+                else throw new UnableToRegisterWalletException();
             }
             catch (Exception ex)
             {

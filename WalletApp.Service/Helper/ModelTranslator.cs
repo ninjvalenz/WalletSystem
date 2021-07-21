@@ -70,6 +70,14 @@ namespace WalletApp.Service.Helper
 
         }
 
+        public static RegisterWalletViewModel RegisterWalletViewModel(this DataTable walletdomain)
+        {
+            return new RegisterWalletViewModel()
+            {
+                AccountNumber = walletdomain.Rows[0]["AccountNumber"] != null ? (long)walletdomain.Rows[0]["AccountNumber"] : 0
+            };
+        }
+
 
 
     }
