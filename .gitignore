@@ -16,3 +16,5 @@
 /WalletApp.Api/obj
 /WalletApp.Database/WalletApp.Database.sqlproj.user
 /WalletApp.Database/obj/Debug
+/WalletApp.Database/WalletApp.Database.dbmdl
+/WalletApp.Database/WalletApp.Database.jfm
