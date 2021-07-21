@@ -63,6 +63,43 @@ namespace WalletApp.Service.Tests
 
         }
 
+        [Test]
+        public void ViewTransactionHistoryByRange_Returns_TransactionHistoryListViewModel_EndOfLine()
+        {
+            var service = GetWalletTransactionService();
+            //Arrange
+            dbService.Setup(x => x.ExecuteQuery(It.IsAny<string>(), It.IsAny<SqlParameter[]>(), It.IsAny<CommandType>()).Result).
+                Returns(new DataTable());
+
+            //Act
+            var result = service.ViewTransactionHistoryByRange(111111111111, It.IsAny<DateTime>(), It.IsAny<DateTime>()).Result;
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.AreEqual(result.IsSuccess, true);
+            Assert.AreEqual(result.InfoMessage, "No more records to be display");
+
+        }
+
+        [Test]
+        public void ViewTransactionHistoryByRange_Returns_TransactionHistoryListViewModel_Success()
+        {
+            var service = GetWalletTransactionService();
+            //Arrange
+            dbService.Setup(x => x.ExecuteQuery(It.IsAny<string>(), It.IsAny<SqlParameter[]>(), It.IsAny<CommandType>()).Result).
+                Returns(GenerateTransactionHistoryMock());
+
+            //Act
+            var result = service.ViewTransactionHistoryByRange(111111111111, It.IsAny<DateTime>(), It.IsAny<DateTime>()).Result;
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.AreEqual(result.IsSuccess, true);
+            Assert.IsNull(result.Message);
+            Assert.IsNull(result.InfoMessage);
+
+        }
+
         #region GenerateTransactionHistoryMock
         public DataTable GenerateTransactionHistoryMock()
         {

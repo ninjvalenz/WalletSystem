@@ -98,6 +98,18 @@ namespace WalletApp.Service
                 //        //}
                 //    }
                 //}
+
+                var domainResult = await dBService.ExecuteQuery("ViewTransactionHistoryByRange", new SqlParameter[]
+                    {
+                        new SqlParameter() { ParameterName = "AccountNumber", Value = accountNumber },
+                        new SqlParameter() { ParameterName = "FromDate", Value = fromDate },
+                        new SqlParameter() { ParameterName = "ToDate", Value = toDate }
+                    }, CommandType.StoredProcedure);
+
+                if (domainResult != null && domainResult.Rows != null && domainResult.Rows.Count > 0)
+                    transactionListViewModel = domainResult.ToTransactionHistoryListViewModel();
+                else
+                    transactionListViewModel.InfoMessage = "No more records to be display";
             }
             catch (Exception ex)
             {
