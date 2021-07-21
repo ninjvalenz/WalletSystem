@@ -12,3 +12,7 @@
 /WalletApp.Service/obj
 /WalletApp.Service.Tests/bin/Debug/netcoreapp3.1
 /WalletApp.Service.Tests/obj
+/WalletApp.Api/bin/Debug/netcoreapp3.1
+/WalletApp.Api/obj
+/WalletApp.Database/WalletApp.Database.sqlproj.user
+/WalletApp.Database/obj/Debug

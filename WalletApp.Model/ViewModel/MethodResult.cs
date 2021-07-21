@@ -15,10 +15,12 @@ namespace WalletApp.Model.ViewModel
             }
             set
             {
-                Message = value;
+                message = value;
             }
 
         }
+
+        public string InfoMessage { get; set; }
 
         public bool IsSuccess
         {

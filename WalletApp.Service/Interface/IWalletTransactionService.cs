@@ -13,9 +13,9 @@ namespace WalletApp.Service.Interface
             long accountNumber, 
             DateTime fromDate, 
             DateTime toDate);
-        Task<DepositMoneyViewModel> DepositMoney(long accountNumber, double amount);
-        Task<TransferMoneyViewModel> TransferMoney(long accountNumber, long toAccountNumber, double amount);
+        Task<DepositMoneyViewModel> DepositMoney(long accountNumber, decimal amount);
+        Task<TransferMoneyViewModel> TransferMoney(long accountNumber, long toAccountNumber, decimal amount);
 
-        Task<WithdrawMoneyViewModel> WithdrawMoney(long accountNumber, double amount);
+        Task<WithdrawMoneyViewModel> WithdrawMoney(long accountNumber, decimal amount);
     }
 }

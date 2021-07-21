@@ -23,11 +23,14 @@ namespace WalletApp
         {
 
             ConfigureDependecyInjection();
-            //await walletTransactionService.DepositMoney(100000035644, 1500);
+            //var xx = await walletTransactionService.DepositMoney(100000035644, 99999999);
             //await walletTransactionService.TransferMoney(100000035644, 626829010175, 500);
             //await walletTransactionService.WithdrawMoney(626829010175, 50);
-           
+            //var result = await userSecurityService.RegisterUser("jvalenzona5", "test");
+            //var result2 = await userWalletAccountService.RegisterWallet(result.UserSecurityID);
 
+            //var aaa = await walletTransactionService.TransferMoney(100000035644, 626829010175, 999999999);
+            var xx = await walletTransactionService.ViewTransactionHistoryByRange(100000035644, DateTime.Parse("07/21/2021"), DateTime.Parse("07/22/2021"));
             Console.WriteLine("Hello World!");
             
         }
@@ -44,6 +47,7 @@ namespace WalletApp
                .AddSingleton<IConfiguration>(_configuration);
 
             serviceCollection.AddTransient(typeof(ISequelConnection), typeof(DevSqlConnection));
+            serviceCollection.AddTransient(typeof(IDBService), typeof(DBService));
             serviceCollection.AddTransient(typeof(IUserSecurityService), typeof(UserSecurityService));
             serviceCollection.AddTransient(typeof(IUserWalletAccountService), typeof(UserWalletAccountService));
             serviceCollection.AddTransient(typeof(IWalletTransactionService), typeof(WalletTransactionService));
