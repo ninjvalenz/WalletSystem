@@ -6,12 +6,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="WalletApp.Api\**" />
     <Compile Remove="WalletApp.Model\**" />
     <Compile Remove="WalletApp.Service.Tests\**" />
     <Compile Remove="WalletApp.Service\**" />
+    <EmbeddedResource Remove="WalletApp.Api\**" />
     <EmbeddedResource Remove="WalletApp.Model\**" />
     <EmbeddedResource Remove="WalletApp.Service.Tests\**" />
     <EmbeddedResource Remove="WalletApp.Service\**" />
+    <None Remove="WalletApp.Api\**" />
     <None Remove="WalletApp.Model\**" />
     <None Remove="WalletApp.Service.Tests\**" />
     <None Remove="WalletApp.Service\**" />
