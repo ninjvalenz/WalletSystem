@@ -36,7 +36,7 @@ namespace WalletApp.Service
                         new SqlParameter() { ParameterName = "Password", Value = password}
                     }, CommandType.StoredProcedure);
 
-                if(domainResult != null && domainResult.Rows.Count > 0)
+                if (domainResult != null && domainResult.Rows != null && domainResult.Rows.Count > 0)
                     authenticatedLoginViewModel = domainResult.ToViewModel();
                 else throw new UnauthorizedUserException();
             }
@@ -74,6 +74,19 @@ namespace WalletApp.Service
 
                 //    }
                 //}
+
+                var domainResult = await dBService.ExecuteQuery("RegisterUser",
+                    new SqlParameter[]
+                    {
+                        new SqlParameter() { ParameterName = "Login", Value = login },
+                        new SqlParameter() { ParameterName = "Password", Value = password}
+                    }, CommandType.StoredProcedure);
+
+                if (domainResult != null && domainResult.Rows != null && domainResult.Rows.Count > 0 && domainResult.Rows[0][0] != DBNull.Value)
+                    registerUserViewModel = domainResult.RegisterUserToViewModel();
+                else
+                    throw new UnableToRegisterUserException();
+
             }
             catch(Exception ex)
             {

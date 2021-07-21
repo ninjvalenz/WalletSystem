@@ -26,7 +26,7 @@ namespace WalletApp
             // await walletTransactionService.DepositMoney(100000035644, 1500);
             //await walletTransactionService.TransferMoney(100000035644, 626829010175, 500);
             //await walletTransactionService.WithdrawMoney(626829010175, 50);
-            await userSecurityService.AuthenticateUser("jvalenzona", "P@ssword");
+            var result = await userSecurityService.RegisterUser("jvalenzona3", "P@ssword");
 
             Console.WriteLine("Hello World!");
             

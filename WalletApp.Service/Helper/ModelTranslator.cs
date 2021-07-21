@@ -60,6 +60,16 @@ namespace WalletApp.Service.Helper
             return authenticatedLogin;
         }
 
+        public static RegisterUserViewModel RegisterUserToViewModel(this DataTable userdomain)
+        {
+            return new RegisterUserViewModel()
+            {
+                UserSecurityID = userdomain.Rows[0]["UserSecurityID"] != null ? (Guid)userdomain.Rows[0]["UserSecurityID"] : Guid.Empty
+            };
+        
+
+        }
+
 
 
     }

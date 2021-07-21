@@ -42,7 +42,7 @@ namespace WalletApp.Service.Tests
             Assert.NotNull(result);
             Assert.AreEqual(result.IsSuccess, false);
             Assert.AreEqual(result.Message, "Invalid credentials!");
-          
+
         }
 
 
@@ -56,6 +56,42 @@ namespace WalletApp.Service.Tests
 
             //Act
             var result = service.AuthenticateUser("login", "pass").Result;
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.AreEqual(result.IsSuccess, true);
+            Assert.IsNull(result.Message);
+
+        }
+
+        [Test]
+        public void RegisterUser_Returns_RegisterUserViewModel_NotSuccess()
+        {
+            var service = GetUserSecurityService();
+            //Arrange
+            dbService.Setup(x => x.ExecuteQuery(It.IsAny<string>(), It.IsAny<SqlParameter[]>(), It.IsAny<CommandType>()).Result).
+                Returns(GenerateUserRegisterMock_Null());
+
+            //Act
+            var result = service.RegisterUser("login", "pass").Result;
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.AreEqual(result.IsSuccess, false);
+            Assert.AreEqual(result.Message, "Unable to register. Login already exists!");
+
+        }
+
+        [Test]
+        public void RegisterUser_Returns_RegisterUserViewModel_Success()
+        {
+            var service = GetUserSecurityService();
+            //Arrange
+            dbService.Setup(x => x.ExecuteQuery(It.IsAny<string>(), It.IsAny<SqlParameter[]>(), It.IsAny<CommandType>()).Result).
+                Returns(GenerateUserRegisterMock());
+
+            //Act
+            var result = service.RegisterUser("login", "pass").Result;
 
             //Assert
             Assert.NotNull(result);
@@ -84,6 +120,28 @@ namespace WalletApp.Service.Tests
 
             dt.Rows.Add(row1);
             dt.Rows.Add(row2);
+            return dt;
+        }
+
+        private DataTable GenerateUserRegisterMock_Null()
+        {
+            DataTable dt = new DataTable();
+            dt.Columns.Add(new DataColumn() { ColumnName = "UserSecurityID", DataType = typeof(Guid) });
+
+            DataRow row1 = dt.NewRow();
+            row1["UserSecurityID"] = DBNull.Value;
+            dt.Rows.Add(row1);
+            return dt;
+        }
+
+        private DataTable GenerateUserRegisterMock()
+        {
+            DataTable dt = new DataTable();
+            dt.Columns.Add(new DataColumn() { ColumnName = "UserSecurityID", DataType = typeof(Guid) });
+
+            DataRow row1 = dt.NewRow();
+            row1["UserSecurityID"] = Guid.NewGuid();
+            dt.Rows.Add(row1);
             return dt;
         }
         #endregion
