@@ -8,16 +8,18 @@ using WalletApp.Model.DomainModel;
 using WalletApp.Model.ViewModel;
 using WalletApp.Model.ViewModel.Exceptions;
 using WalletApp.Service.ConnectionStrings;
+using WalletApp.Service.Helper;
 using WalletApp.Service.Interface;
 
 namespace WalletApp.Service
 {
     public class WalletTransactionService : IWalletTransactionService
     {
-        ISequelConnection dbConnection;
-        public WalletTransactionService(ISequelConnection _dbConnection)
+        IDBService dBService;
+        public WalletTransactionService(IDBService _dBService)
         {
-            dbConnection = _dbConnection;
+            dBService = _dBService;
+
         }
 
         public async Task<TransactionHistoryListViewModel> ViewTransactionHistoryAll(
@@ -29,45 +31,16 @@ namespace WalletApp.Service
 
             try
             {
-                using (SqlConnection connection =
-              new SqlConnection(dbConnection.ConnectionString))
-                {
-                    await connection.OpenAsync();
-
-                    using (SqlCommand command = new SqlCommand("ViewTransactionHistoryAll", connection))
+                var domainResult = await dBService.ExecuteQuery("ViewTransactionHistoryAll", new SqlParameter[]
                     {
-                        command.CommandType = CommandType.StoredProcedure;
-                        command.Parameters.AddWithValue("@AccountNumber", accountNumber);
-                        command.Parameters.AddWithValue("@Offset", offset);
+                        new SqlParameter() { ParameterName = "AccountNumber", Value = accountNumber },
+                        new SqlParameter() { ParameterName = "Offset", Value = offset }
+                    }, CommandType.StoredProcedure);
 
-                        using (SqlDataReader sqlDataReader = await command.ExecuteReaderAsync())
-                        {
-                            transactionListViewModel.TransactionHistoryViewModels = new List<TransactionHistoryViewModel>();
-
-                            while (await sqlDataReader.ReadAsync())
-                            {
-                                var transactionInstance = new TransactionHistoryViewModel();
-                                try
-                                {
-                                    transactionInstance.TransactionType = sqlDataReader.GetFieldValue<string>("TransactionType");
-                                    transactionInstance.TransactionAmount = sqlDataReader.GetFieldValue<decimal>("Amount");
-                                    transactionInstance.FromToAccountNumber = (sqlDataReader["FromToAccountNumber"] as long?) ?? 0;
-                                    transactionInstance.TransactionDate = sqlDataReader.GetFieldValue<DateTime>("TransactionDate");
-                                    transactionInstance.TransactionEndBalance = sqlDataReader.GetFieldValue<decimal>("EndBalance");
-                                }
-                                catch (Exception ex)
-                                {
-                                    transactionInstance.Message = ex.Message;
-                                }
-                                finally
-                                {
-                                    transactionListViewModel.TransactionHistoryViewModels.Add(transactionInstance);
-                                }
-                              
-                            }
-                        }
-                    }
-                }
+                if (domainResult != null && domainResult.Rows != null && domainResult.Rows.Count > 0)
+                    transactionListViewModel = domainResult.ToTransactionHistoryListViewModel();
+                else
+                    transactionListViewModel.InfoMessage = "No more records to be display";
 
             }
             catch (Exception ex)
@@ -88,43 +61,43 @@ namespace WalletApp.Service
             try
             {
 
-                using (SqlConnection connection =
-                    new SqlConnection(dbConnection.ConnectionString))
-                {
-                    await connection.OpenAsync();
+                //using (SqlConnection connection =
+                //    new SqlConnection(dbConnection.ConnectionString))
+                //{
+                //    await connection.OpenAsync();
 
-                    using (SqlCommand command = new SqlCommand("ViewTransactionHistoryByRange", connection))
-                    {
-                        command.CommandType = CommandType.StoredProcedure;
-                        command.Parameters.AddWithValue("@AccountNumber", accountNumber);
-                        command.Parameters.AddWithValue("@FromDate", fromDate);
-                        command.Parameters.AddWithValue("@ToDate", toDate);
+                //    using (SqlCommand command = new SqlCommand("ViewTransactionHistoryByRange", connection))
+                //    {
+                //        command.CommandType = CommandType.StoredProcedure;
+                //        command.Parameters.AddWithValue("@AccountNumber", accountNumber);
+                //        command.Parameters.AddWithValue("@FromDate", fromDate);
+                //        command.Parameters.AddWithValue("@ToDate", toDate);
 
-                        using (SqlDataReader sqlDataReader = await command.ExecuteReaderAsync())
-                        {
-                            while (await sqlDataReader.ReadAsync())
-                            {
-                                var transactionInstance = new TransactionHistoryViewModel();
-                                try
-                                {
-                                    transactionInstance.TransactionType = sqlDataReader.GetFieldValue<string>("TransactionType");
-                                    transactionInstance.TransactionAmount = sqlDataReader.GetFieldValue<decimal>("Amount");
-                                    transactionInstance.FromToAccountNumber = (sqlDataReader["FromToAccountNumber"] as long?) ?? 0;
-                                    transactionInstance.TransactionDate = sqlDataReader.GetFieldValue<DateTime>("TransactionDate");
-                                    transactionInstance.TransactionEndBalance = sqlDataReader.GetFieldValue<decimal>("EndBalance");
-                                }
-                                catch (Exception ex)
-                                {
-                                    transactionInstance.Message = ex.Message;
-                                }
-                                finally
-                                {
-                                    transactionListViewModel.TransactionHistoryViewModels.Add(transactionInstance);
-                                }
-                            }
-                        }
-                    }
-                }
+                //        //using (SqlDataReader sqlDataReader = await command.ExecuteReaderAsync())
+                //        //{
+                //        //    while (await sqlDataReader.ReadAsync())
+                //        //    {
+                //        //        var transactionInstance = new TransactionHistoryViewModel();
+                //        //        try
+                //        //        {
+                //        //            transactionInstance.TransactionType = sqlDataReader.GetFieldValue<string>("TransactionType");
+                //        //            transactionInstance.TransactionAmount = sqlDataReader.GetFieldValue<decimal>("Amount");
+                //        //            transactionInstance.FromToAccountNumber = (sqlDataReader["FromToAccountNumber"] as long?) ?? 0;
+                //        //            transactionInstance.TransactionDate = sqlDataReader.GetFieldValue<DateTime>("TransactionDate");
+                //        //            transactionInstance.TransactionEndBalance = sqlDataReader.GetFieldValue<decimal>("EndBalance");
+                //        //        }
+                //        //        catch (Exception ex)
+                //        //        {
+                //        //            transactionInstance.Message = ex.Message;
+                //        //        }
+                //        //        finally
+                //        //        {
+                //        //            transactionListViewModel.TransactionHistoryViewModels.Add(transactionInstance);
+                //        //        }
+                //        //    }
+                //        //}
+                //    }
+                //}
             }
             catch (Exception ex)
             {
@@ -142,20 +115,20 @@ namespace WalletApp.Service
 
             try
             {
-                using (SqlConnection connection =
-                  new SqlConnection(dbConnection.ConnectionString))
-                {
-                    await connection.OpenAsync();
+                //using (SqlConnection connection =
+                //  new SqlConnection(dbConnection.ConnectionString))
+                //{
+                //    await connection.OpenAsync();
 
-                    using (SqlCommand command = new SqlCommand("DepositMoney", connection))
-                    {
-                        command.CommandType = CommandType.StoredProcedure;
-                        command.Parameters.AddWithValue("@AccountNumber", accountNumber);
-                        command.Parameters.AddWithValue("@Amount", amount);
+                //    using (SqlCommand command = new SqlCommand("DepositMoney", connection))
+                //    {
+                //        command.CommandType = CommandType.StoredProcedure;
+                //        command.Parameters.AddWithValue("@AccountNumber", accountNumber);
+                //        command.Parameters.AddWithValue("@Amount", amount);
 
-                        await command.ExecuteNonQueryAsync();
-                    }
-                }
+                //        await command.ExecuteNonQueryAsync();
+                //    }
+                //}
             }
             catch(Exception ex)
             {
@@ -171,35 +144,35 @@ namespace WalletApp.Service
         {
             WithdrawMoneyViewModel withdrawMoneyViewModel = new WithdrawMoneyViewModel();
 
-            try
-            {
-                using (SqlConnection connection =
-           new SqlConnection(dbConnection.ConnectionString))
-                {
-                    await connection.OpenAsync();
+           // try
+           // {
+           //     using (SqlConnection connection =
+           //new SqlConnection(dbConnection.ConnectionString))
+           //     {
+           //         await connection.OpenAsync();
 
-                    using (SqlCommand command = new SqlCommand("WithdrawMoney", connection))
-                    {
-                        command.CommandType = CommandType.StoredProcedure;
-                        command.Parameters.AddWithValue("@AccountNumber", accountNumber);
-                        command.Parameters.AddWithValue("@Amount", amount);
+           //         using (SqlCommand command = new SqlCommand("WithdrawMoney", connection))
+           //         {
+           //             command.CommandType = CommandType.StoredProcedure;
+           //             command.Parameters.AddWithValue("@AccountNumber", accountNumber);
+           //             command.Parameters.AddWithValue("@Amount", amount);
 
-                        using (SqlDataReader sqlDataReader = await command.ExecuteReaderAsync())
-                        {
-                            if (await sqlDataReader.ReadAsync())
-                            {
-                                if (!sqlDataReader.GetFieldValue<bool>("IsSuccess"))
-                                    throw new InsufficientWalletBalanceException();
-                            }
-                        }
-                    }
-                }
+           //             using (SqlDataReader sqlDataReader = await command.ExecuteReaderAsync())
+           //             {
+           //                 if (await sqlDataReader.ReadAsync())
+           //                 {
+           //                     if (!sqlDataReader.GetFieldValue<bool>("IsSuccess"))
+           //                         throw new InsufficientWalletBalanceException();
+           //                 }
+           //             }
+           //         }
+           //     }
 
-            }
-            catch (Exception ex)
-            {
-                withdrawMoneyViewModel.Message = ex.Message;
-            }
+           // }
+           // catch (Exception ex)
+           // {
+           //     withdrawMoneyViewModel.Message = ex.Message;
+           // }
 
             return withdrawMoneyViewModel;
         }
@@ -213,28 +186,28 @@ namespace WalletApp.Service
 
             try
             {
-                using (SqlConnection connection =
-             new SqlConnection(dbConnection.ConnectionString))
-                {
-                    await connection.OpenAsync();
+             //   using (SqlConnection connection =
+             //new SqlConnection(dbConnection.ConnectionString))
+             //   {
+             //       await connection.OpenAsync();
 
-                    using (SqlCommand command = new SqlCommand("TransferMoney", connection))
-                    {
-                        command.CommandType = CommandType.StoredProcedure;
-                        command.Parameters.AddWithValue("@AccountNumber", accountNumber);
-                        command.Parameters.AddWithValue("@ToAccountNumber", toAccountNumber);
-                        command.Parameters.AddWithValue("@Amount", amount);
+             //       using (SqlCommand command = new SqlCommand("TransferMoney", connection))
+             //       {
+             //           command.CommandType = CommandType.StoredProcedure;
+             //           command.Parameters.AddWithValue("@AccountNumber", accountNumber);
+             //           command.Parameters.AddWithValue("@ToAccountNumber", toAccountNumber);
+             //           command.Parameters.AddWithValue("@Amount", amount);
 
-                        using (SqlDataReader sqlDataReader = await command.ExecuteReaderAsync())
-                        {
-                            if (await sqlDataReader.ReadAsync())
-                            {
-                                if (!sqlDataReader.GetFieldValue<bool>("IsSuccess"))
-                                    throw new InsufficientWalletBalanceException();
-                            }
-                        }
-                    }
-                }
+             //           using (SqlDataReader sqlDataReader = await command.ExecuteReaderAsync())
+             //           {
+             //               if (await sqlDataReader.ReadAsync())
+             //               {
+             //                   if (!sqlDataReader.GetFieldValue<bool>("IsSuccess"))
+             //                       throw new InsufficientWalletBalanceException();
+             //               }
+             //           }
+             //       }
+             //   }
             }
             catch (Exception ex)
             {

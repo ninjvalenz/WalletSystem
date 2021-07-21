@@ -60,7 +60,7 @@ namespace WalletApp.Service
                     }, CommandType.StoredProcedure);
 
                 if (domainResult != null && domainResult.Rows != null && domainResult.Rows.Count > 0 && domainResult.Rows[0][0] != DBNull.Value)
-                    registerUserViewModel = domainResult.RegisterUserToViewModel();
+                    registerUserViewModel = domainResult.ToRegisterUserToViewModel();
                 else
                     throw new UnableToRegisterUserException();
 

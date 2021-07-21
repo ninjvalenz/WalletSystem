@@ -60,22 +60,39 @@ namespace WalletApp.Service.Helper
             return authenticatedLogin;
         }
 
-        public static RegisterUserViewModel RegisterUserToViewModel(this DataTable userdomain)
-        {
-            return new RegisterUserViewModel()
-            {
-                UserSecurityID = userdomain.Rows[0]["UserSecurityID"] != null ? (Guid)userdomain.Rows[0]["UserSecurityID"] : Guid.Empty
-            };
-        
+        public static RegisterUserViewModel ToRegisterUserToViewModel(this DataTable userdomain)
+           => new RegisterUserViewModel()
+           {
+               UserSecurityID = userdomain.Rows[0]["UserSecurityID"] != null ? (Guid)userdomain.Rows[0]["UserSecurityID"] : Guid.Empty
+           };
 
-        }
-
-        public static RegisterWalletViewModel RegisterWalletViewModel(this DataTable walletdomain)
+        public static RegisterWalletViewModel ToRegisterWalletViewModel(this DataTable walletdomain)
+        => new RegisterWalletViewModel()
         {
-            return new RegisterWalletViewModel()
+            AccountNumber = walletdomain.Rows[0]["AccountNumber"] != null ? (long)walletdomain.Rows[0]["AccountNumber"] : 0
+        };
+
+        public static TransactionHistoryListViewModel ToTransactionHistoryListViewModel(this DataTable transactdomain)
+        {
+            TransactionHistoryListViewModel historyViewModels = new TransactionHistoryListViewModel()
             {
-                AccountNumber = walletdomain.Rows[0]["AccountNumber"] != null ? (long)walletdomain.Rows[0]["AccountNumber"] : 0
+                TransactionHistoryViewModels = new List<TransactionHistoryViewModel>()
             };
+
+            foreach (DataRow domainRow in transactdomain.Rows)
+            {
+                historyViewModels.TransactionHistoryViewModels.Add(new TransactionHistoryViewModel()
+                {
+                    TransactionType = domainRow["TransactionType"] != null ? domainRow["TransactionType"].ToString() : string.Empty,
+                    TransactionAmount = domainRow["Amount"] != null ? (decimal)domainRow["Amount"] : 0,
+                    FromToAccountNumber = domainRow["FromToAccountNumber"] != null && domainRow["FromToAccountNumber"] != DBNull.Value ? (long?)domainRow["FromToAccountNumber"] : 0,
+                    TransactionDate = domainRow["TransactionDate"] != null ? ((DateTime)domainRow["TransactionDate"]).ToShortDateString() : string.Empty,
+                    TransactionEndBalance = domainRow["EndBalance"] != null ? (decimal)domainRow["EndBalance"] : 0,
+
+                });
+            }
+
+            return historyViewModels;
         }
 
 

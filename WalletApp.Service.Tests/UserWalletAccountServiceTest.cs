@@ -39,7 +39,7 @@ namespace WalletApp.Service.Tests
             //Assert
             Assert.NotNull(result);
             Assert.AreEqual(result.IsSuccess, false);
-            Assert.NotNull(result.Message);
+            Assert.AreEqual(result.Message, "Unable to register new wallet account. Contact the developer.");
 
         }
 

@@ -20,6 +20,8 @@ namespace WalletApp.Model.ViewModel
 
         }
 
+        public string InfoMessage { get; set; }
+
         public bool IsSuccess
         {
             get

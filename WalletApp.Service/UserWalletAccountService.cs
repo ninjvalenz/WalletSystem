@@ -32,7 +32,7 @@ namespace WalletApp.Service
                     }, CommandType.StoredProcedure);
 
                 if (domainResult != null && domainResult.Rows != null && domainResult.Rows.Count > 0)
-                    registerWalletViewModel = domainResult.RegisterWalletViewModel();
+                    registerWalletViewModel = domainResult.ToRegisterWalletViewModel();
                 else throw new UnableToRegisterWalletException();
             }
             catch (Exception ex)
