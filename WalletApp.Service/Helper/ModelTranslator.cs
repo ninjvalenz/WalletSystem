@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using WalletApp.Model.DomainModel;
@@ -38,6 +39,27 @@ namespace WalletApp.Service.Helper
           {
               AccountNumber = accountNumberDomain
           };
+
+        public static AuthenticatedLoginViewModel ToViewModel(this DataTable userdomain)
+        {
+            
+            AuthenticatedLoginViewModel authenticatedLogin = new AuthenticatedLoginViewModel()
+            {
+                AccountNumber = new List<long>()
+            };
+
+            foreach (DataRow domainRow in userdomain.Rows)
+            {
+                authenticatedLogin.UserId = domainRow["Id"] != null ? (Guid)domainRow["Id"] : Guid.Empty;
+                authenticatedLogin.Login = domainRow["Login"] != null ? domainRow["Login"].ToString() : string.Empty;
+
+                if (domainRow["AccountNumber"] != null)
+                    authenticatedLogin.AccountNumber.Add((long)domainRow["AccountNumber"]);
+            }
+
+            return authenticatedLogin;
+        }
+
 
 
     }

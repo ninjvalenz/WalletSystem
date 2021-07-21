@@ -15,10 +15,12 @@ namespace WalletApp.Service
 {
     public class UserSecurityService : IUserSecurityService
     {
-        ISequelConnection dbConnection;
-        public UserSecurityService(ISequelConnection _dbConnection)
+        //ISequelConnection dbConnection;
+        IDBService dBService;
+        public UserSecurityService(IDBService _dBService)
         {
-            dbConnection = _dbConnection;
+           
+            dBService = _dBService;
         }
         public async Task<AuthenticatedLoginViewModel> AuthenticateUser(string login, string password)
         {
@@ -27,37 +29,16 @@ namespace WalletApp.Service
             try
             {
 
-                using (SqlConnection connection = 
-                    new SqlConnection(dbConnection.ConnectionString))
-                {
-                    await connection.OpenAsync();
-
-                    using (SqlCommand command = new SqlCommand("AuthenticateLogin", connection))
+                var domainResult = await dBService.ExecuteQuery("AuthenticateLogin",
+                    new SqlParameter[]
                     {
-                        command.CommandType = CommandType.StoredProcedure;
-                        command.Parameters.AddWithValue("@Login", login);
-                        command.Parameters.AddWithValue("@Password", password);
+                        new SqlParameter() { ParameterName = "Login", Value = login },
+                        new SqlParameter() { ParameterName = "Password", Value = password}
+                    }, CommandType.StoredProcedure);
 
-                        List<AuthenticatedLogin> userResult = new List<AuthenticatedLogin>();
-
-                        using (SqlDataReader sqlDataReader = await command.ExecuteReaderAsync())
-                        {
-                            while(await sqlDataReader.ReadAsync())
-                            {
-                                var userInstance = new AuthenticatedLogin();
-                                userInstance.Id = sqlDataReader.GetFieldValue<Guid>("Id");
-                                userInstance.Login = sqlDataReader.GetFieldValue<string>("Login");
-                                userInstance.AccountNumber = sqlDataReader.GetFieldValue<long>("AccountNumber");
-
-                                userResult.Add(userInstance);
-                            }
-                        }
-
-                        if (userResult.Count > 0)
-                            authenticatedLoginViewModel = userResult.ToViewModel();
-                        else throw new UnauthorizedUserException();
-                    }
-                }
+                if(domainResult != null && domainResult.Rows.Count > 0)
+                    authenticatedLoginViewModel = domainResult.ToViewModel();
+                else throw new UnauthorizedUserException();
             }
             catch (Exception ex)
             {
@@ -73,26 +54,26 @@ namespace WalletApp.Service
 
             try
             {
-                using (SqlConnection connection =
-                  new SqlConnection(dbConnection.ConnectionString))
-                {
-                    await connection.OpenAsync();
+                //using (SqlConnection connection =
+                //  new SqlConnection(dbConnection.ConnectionString))
+                //{
+                //    await connection.OpenAsync();
 
-                    using (SqlCommand command = new SqlCommand("RegisterUser", connection))
-                    {
-                        command.CommandType = CommandType.StoredProcedure;
-                        command.Parameters.AddWithValue("@Login", login);
-                        command.Parameters.AddWithValue("@Password", password);
+                //    using (SqlCommand command = new SqlCommand("RegisterUser", connection))
+                //    {
+                //        command.CommandType = CommandType.StoredProcedure;
+                //        command.Parameters.AddWithValue("@Login", login);
+                //        command.Parameters.AddWithValue("@Password", password);
 
-                        using (SqlDataReader sqlDataReader = await command.ExecuteReaderAsync())
-                        {
-                            if (await sqlDataReader.ReadAsync())
-                                registerUserViewModel = sqlDataReader.GetFieldValue<Guid>("UserSecurityID").ToViewModel();
-                        }
+                //        using (SqlDataReader sqlDataReader = await command.ExecuteReaderAsync())
+                //        {
+                //            if (await sqlDataReader.ReadAsync())
+                //                registerUserViewModel = sqlDataReader.GetFieldValue<Guid>("UserSecurityID").ToViewModel();
+                //        }
 
 
-                    }
-                }
+                //    }
+                //}
             }
             catch(Exception ex)
             {

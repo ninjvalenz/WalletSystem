@@ -14,48 +14,79 @@ namespace WalletApp.Service.Tests
     [TestFixture]
     public class UserSecurityServiceTest
     {
-        private Mock<ISequelConnection> dbConnection;
+        private Mock<IDBService> dbService;
 
         [SetUp]
         public void Setup()
         {
-            dbConnection = new Mock<ISequelConnection>();
+            dbService = new Mock<IDBService>();
         }
 
         private IUserSecurityService GetUserSecurityService()
         {
-            return new UserSecurityService(dbConnection.Object);
+            return new UserSecurityService(dbService.Object);
         }
 
         [Test]
-        public void AuthenticateUser_Returns_AuthenticatedLoginViewModelTest()
+        public void AuthenticateUser_Returns_AuthenticatedLoginViewModel_NotSuccess()
         {
-            var mockedDataReader = new Mock<IDataReader>();
+            var service = GetUserSecurityService();
+            //Arrange
+            dbService.Setup(x => x.ExecuteQuery(It.IsAny<string>(), It.IsAny<SqlParameter[]>(), It.IsAny<CommandType>()).Result).
+                Returns(new DataTable());
+
+            //Act
+            var result = service.AuthenticateUser("login", "pass").Result;
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.AreEqual(result.IsSuccess, false);
+            Assert.AreEqual(result.Message, "Invalid credentials!");
           
         }
 
-        //private static Mock<AuthenticatedLogin> MockExecuteReader(Dictionary<string, object> returnValues)
-        //{
-            //var mockedDataReader = new Mock<IDataReader>();
-            //bool readFlag = true;
-            //mockedDataReader.Setup(x => x.Read()).Returns(() => readFlag).Callback(() => readFlag = false);
-            //foreach (KeyValuePair<string, object> keyVal in returnValues)
-            //{
-            //    mockedDataReader.Setup(x => x[keyVal.Key]).Returns(keyVal.Value);
-            //}
-            //Mock<DbProviderFactory> mockedDBFactory = new Mock<DbProviderFactory>();
-            //Mock<DbCommand> mockedDB = new Mock<DbCommand>("MockedDB", mockedDBFactory.Object);
 
-            //Queue<object> responseQueue = new Queue<object>();
-            //responseQueue.Enqueue("First");
-            //responseQueue.Enqueue("Second");
-            //responseQueue.Enqueue("Third");
-            //mockedService.Setup(x => x.myMethod(It.IsAny<string>())).Returns(() => responseQueue.Dequeue());
+        [Test]
+        public void AuthenticateUser_Returns_AuthenticatedLoginViewModel_Success()
+        {
+            var service = GetUserSecurityService();
+            //Arrange
+            dbService.Setup(x => x.ExecuteQuery(It.IsAny<string>(), It.IsAny<SqlParameter[]>(), It.IsAny<CommandType>()).Result).
+                Returns(GenerateUserSecurityMock());
 
-            //mockedDB.Setup(x => x.ExecuteReader(It.IsAny<AuthenticatedLogin>())).Returns(mockedDataReader.Object);
-            //return mockedDB;
-        //}
+            //Act
+            var result = service.AuthenticateUser("login", "pass").Result;
 
+            //Assert
+            Assert.NotNull(result);
+            Assert.AreEqual(result.IsSuccess, true);
+            Assert.IsNull(result.Message);
+
+        }
+
+        #region GenerateMockData
+        private DataTable GenerateUserSecurityMock()
+        {
+            DataTable dt = new DataTable();
+            dt.Columns.Add(new DataColumn() { ColumnName = "Id", DataType = typeof(Guid) });
+            dt.Columns.Add(new DataColumn() { ColumnName = "Login", DataType = typeof(string) });
+            dt.Columns.Add(new DataColumn() { ColumnName = "AccountNumber", DataType = typeof(long) });
+
+            DataRow row1 = dt.NewRow();
+            row1["Id"] = Guid.NewGuid();
+            row1["Login"] = "user1";
+            row1["AccountNumber"] = 111111111111;
+
+            DataRow row2 = dt.NewRow();
+            row2["Id"] = Guid.NewGuid();
+            row2["Login"] = "user2";
+            row2["AccountNumber"] = 111111111112;
+
+            dt.Rows.Add(row1);
+            dt.Rows.Add(row2);
+            return dt;
+        }
+        #endregion
 
     }
 }
