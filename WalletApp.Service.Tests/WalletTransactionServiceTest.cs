@@ -154,6 +154,42 @@ namespace WalletApp.Service.Tests
 
         }
 
+        [Test]
+        public void TransferMoney_Returns_TransferMoneyViewModel_NotSuccess()
+        {
+            var service = GetWalletTransactionService();
+            //Arrange
+            dbService.Setup(x => x.ExecuteQuery(It.IsAny<string>(), It.IsAny<SqlParameter[]>(), It.IsAny<CommandType>()).Result)
+                .Returns(GenerateNotSuccessCredit());
+
+            //Act
+            var result = service.TransferMoney(It.IsAny<long>(), It.IsAny<long>(), It.IsAny<decimal>()).Result;
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.AreEqual(result.IsSuccess, false);
+            Assert.AreEqual(result.Message, "Insufficient balance on the wallet!");
+
+        }
+
+        [Test]
+        public void TransferMoney_Returns_TransferMoneyViewModel_Success()
+        {
+            var service = GetWalletTransactionService();
+            //Arrange
+            dbService.Setup(x => x.ExecuteQuery(It.IsAny<string>(), It.IsAny<SqlParameter[]>(), It.IsAny<CommandType>()).Result)
+                .Returns(GenerateSuccessCredit());
+
+            //Act
+            var result = service.TransferMoney(It.IsAny<long>(), It.IsAny<long>(), It.IsAny<decimal>()).Result;
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.AreEqual(result.IsSuccess, true);
+            Assert.IsNull(result.Message);
+
+        }
+
         #region GenerateTransactionHistoryMock
         public DataTable GenerateTransactionHistoryMock()
         {

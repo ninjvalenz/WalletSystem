@@ -28,8 +28,8 @@ namespace WalletApp
             //await walletTransactionService.WithdrawMoney(626829010175, 50);
             //var result = await userSecurityService.RegisterUser("jvalenzona5", "test");
             //var result2 = await userWalletAccountService.RegisterWallet(result.UserSecurityID);
-            var aaa = await walletTransactionService.ViewTransactionHistoryAll(100000035644, 0);
-            var bb = await walletTransactionService.ViewTransactionHistoryAll(100000035644, 1000);
+
+            var aaa = await walletTransactionService.TransferMoney(100000035644, 626829010175, 999999999);
 
             Console.WriteLine("Hello World!");
             
