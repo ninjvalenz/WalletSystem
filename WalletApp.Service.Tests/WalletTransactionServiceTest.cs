@@ -35,7 +35,7 @@ namespace WalletApp.Service.Tests
                 Returns(new DataTable());
 
             //Act
-            var result = service.ViewTransactionHistoryAll(111111111111, 0).Result;
+            var result = service.ViewTransactionHistoryAll(It.IsAny<long>(), It.IsAny<int>()).Result;
 
             //Assert
             Assert.NotNull(result);
@@ -53,7 +53,7 @@ namespace WalletApp.Service.Tests
                 Returns(GenerateTransactionHistoryMock());
 
             //Act
-            var result = service.ViewTransactionHistoryAll(111111111111, 0).Result;
+            var result = service.ViewTransactionHistoryAll(It.IsAny<long>(), 0).Result;
 
             //Assert
             Assert.NotNull(result);
@@ -72,7 +72,7 @@ namespace WalletApp.Service.Tests
                 Returns(new DataTable());
 
             //Act
-            var result = service.ViewTransactionHistoryByRange(111111111111, It.IsAny<DateTime>(), It.IsAny<DateTime>()).Result;
+            var result = service.ViewTransactionHistoryByRange(It.IsAny<long>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()).Result;
 
             //Assert
             Assert.NotNull(result);
@@ -90,7 +90,7 @@ namespace WalletApp.Service.Tests
                 Returns(GenerateTransactionHistoryMock());
 
             //Act
-            var result = service.ViewTransactionHistoryByRange(111111111111, It.IsAny<DateTime>(), It.IsAny<DateTime>()).Result;
+            var result = service.ViewTransactionHistoryByRange(It.IsAny<long>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()).Result;
 
             //Assert
             Assert.NotNull(result);
@@ -99,6 +99,25 @@ namespace WalletApp.Service.Tests
             Assert.IsNull(result.InfoMessage);
 
         }
+
+        [Test]
+        public void DepositMoney_Returns_DepositMoneyViewModel_Success()
+        {
+            var service = GetWalletTransactionService();
+            //Arrange
+            dbService.Setup(x => x.ExecuteNonQuery(It.IsAny<string>(), It.IsAny<SqlParameter[]>(), It.IsAny<CommandType>()));
+
+            //Act
+            var result = service.DepositMoney(It.IsAny<long>(), It.IsAny<decimal>()).Result;
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.AreEqual(result.IsSuccess, true);
+            Assert.IsNull(result.Message);
+            Assert.IsNull(result.InfoMessage);
+
+        }
+
 
         #region GenerateTransactionHistoryMock
         public DataTable GenerateTransactionHistoryMock()

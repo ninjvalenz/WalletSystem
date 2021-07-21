@@ -60,45 +60,6 @@ namespace WalletApp.Service
                         new TransactionHistoryListViewModel();
             try
             {
-
-                //using (SqlConnection connection =
-                //    new SqlConnection(dbConnection.ConnectionString))
-                //{
-                //    await connection.OpenAsync();
-
-                //    using (SqlCommand command = new SqlCommand("ViewTransactionHistoryByRange", connection))
-                //    {
-                //        command.CommandType = CommandType.StoredProcedure;
-                //        command.Parameters.AddWithValue("@AccountNumber", accountNumber);
-                //        command.Parameters.AddWithValue("@FromDate", fromDate);
-                //        command.Parameters.AddWithValue("@ToDate", toDate);
-
-                //        //using (SqlDataReader sqlDataReader = await command.ExecuteReaderAsync())
-                //        //{
-                //        //    while (await sqlDataReader.ReadAsync())
-                //        //    {
-                //        //        var transactionInstance = new TransactionHistoryViewModel();
-                //        //        try
-                //        //        {
-                //        //            transactionInstance.TransactionType = sqlDataReader.GetFieldValue<string>("TransactionType");
-                //        //            transactionInstance.TransactionAmount = sqlDataReader.GetFieldValue<decimal>("Amount");
-                //        //            transactionInstance.FromToAccountNumber = (sqlDataReader["FromToAccountNumber"] as long?) ?? 0;
-                //        //            transactionInstance.TransactionDate = sqlDataReader.GetFieldValue<DateTime>("TransactionDate");
-                //        //            transactionInstance.TransactionEndBalance = sqlDataReader.GetFieldValue<decimal>("EndBalance");
-                //        //        }
-                //        //        catch (Exception ex)
-                //        //        {
-                //        //            transactionInstance.Message = ex.Message;
-                //        //        }
-                //        //        finally
-                //        //        {
-                //        //            transactionListViewModel.TransactionHistoryViewModels.Add(transactionInstance);
-                //        //        }
-                //        //    }
-                //        //}
-                //    }
-                //}
-
                 var domainResult = await dBService.ExecuteQuery("ViewTransactionHistoryByRange", new SqlParameter[]
                     {
                         new SqlParameter() { ParameterName = "AccountNumber", Value = accountNumber },
@@ -121,26 +82,19 @@ namespace WalletApp.Service
 
         public async Task<DepositMoneyViewModel> DepositMoney(
             long accountNumber,
-            double amount)
+            decimal amount)
         {
             DepositMoneyViewModel depositMoneyViewModel = new DepositMoneyViewModel();
 
             try
             {
-                //using (SqlConnection connection =
-                //  new SqlConnection(dbConnection.ConnectionString))
-                //{
-                //    await connection.OpenAsync();
+                await dBService.ExecuteNonQuery("DepositMoney", new SqlParameter[]
+                    {
+                        new SqlParameter() { ParameterName = "AccountNumber", Value = accountNumber },
+                        new SqlParameter() { ParameterName = "Amount", Value = amount }
+                    }, CommandType.StoredProcedure);
 
-                //    using (SqlCommand command = new SqlCommand("DepositMoney", connection))
-                //    {
-                //        command.CommandType = CommandType.StoredProcedure;
-                //        command.Parameters.AddWithValue("@AccountNumber", accountNumber);
-                //        command.Parameters.AddWithValue("@Amount", amount);
-
-                //        await command.ExecuteNonQueryAsync();
-                //    }
-                //}
+              
             }
             catch(Exception ex)
             {
@@ -151,8 +105,8 @@ namespace WalletApp.Service
         }
 
         public async Task<WithdrawMoneyViewModel> WithdrawMoney(
-            long accountNumber, 
-            double amount)
+            long accountNumber,
+            decimal amount)
         {
             WithdrawMoneyViewModel withdrawMoneyViewModel = new WithdrawMoneyViewModel();
 
@@ -191,8 +145,8 @@ namespace WalletApp.Service
 
         public async Task<TransferMoneyViewModel> TransferMoney(
             long accountNumber, 
-            long toAccountNumber, 
-            double amount)
+            long toAccountNumber,
+            decimal amount)
         {
             TransferMoneyViewModel transferMoneyViewModel = new TransferMoneyViewModel();
 
