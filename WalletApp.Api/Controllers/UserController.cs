@@ -1,9 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using WalletApp.Model.ViewModel;
 using WalletApp.Model.ViewModel.Exceptions;
@@ -12,22 +16,24 @@ using WalletApp.Service.Interface;
 
 namespace WalletApp.Api.Controllers
 {
-    //[Authorize]
+    [AllowAnonymous]
     [Route("api/[controller]")]
     [ApiController]
     public class UserController : ControllerBase
     {
         private IUserSecurityService userSecurityService;
         private IUserWalletAccountService userWalletAccountService;
+        private readonly IConfiguration config;
 
         public UserController(IUserSecurityService _userSecurityService, 
-            IUserWalletAccountService _userWalletAccountService)
+            IUserWalletAccountService _userWalletAccountService,
+            IConfiguration _config)
         {
             userSecurityService = _userSecurityService;
             userWalletAccountService = _userWalletAccountService;
+            config = _config;
         }
 
-        [AllowAnonymous]
         [HttpPost("authenticate")]
         public async Task<IActionResult> Authenticate([FromBody] LoginViewModel model)
         {
@@ -46,14 +52,23 @@ namespace WalletApp.Api.Controllers
                 }
                 else
                 {
-                    resultViewModel.Message = $"You are now logged in using login name {user}";
+                   
+                    var tokenString = GenerateJSONWebToken();
+                    resultViewModel.Message = $"You are now logged in using login name {user.Login}. ";
+
+                    if (user.AccountNumber != null && user.AccountNumber.Count > 0)
+                    {
+                        var accounts = string.Join(",", user.AccountNumber);
+                        if (!string.IsNullOrEmpty(accounts))
+                            resultViewModel.Message += $"Wallet account(s): {accounts}";
+                    }
+                    resultViewModel.Token = tokenString;
                 }
             }
 
-            return Ok(user);
+            return Ok(resultViewModel);
         }
-
-        [AllowAnonymous]
+       
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] NewRegisterUserViewModel model)
         {
@@ -92,6 +107,20 @@ namespace WalletApp.Api.Controllers
                 return BadRequest(ex.Message);
             }
          
+        }
+
+        private string GenerateJSONWebToken()
+        {
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config.GetValue<string>("Jwt:Key")));
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(config.GetValue<string>("Jwt:Issuer"),
+              config.GetValue<string>("Jwt:Issuer"),
+              null,
+              expires: DateTime.Now.AddMinutes(120),
+              signingCredentials: credentials);
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
 }

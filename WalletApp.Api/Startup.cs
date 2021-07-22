@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -7,19 +8,23 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using WalletApp.Api.Helper;
 using WalletApp.Service;
 using WalletApp.Service.ConnectionStrings;
 using WalletApp.Service.Interface;
+using System.Configuration;
 
 namespace WalletApp.Api
 {
     public class Startup
     {
+       
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -32,10 +37,20 @@ namespace WalletApp.Api
         {
             services.AddCors();
             services.AddControllers();
-
-            //services.AddAuthentication("BasicAuthentication")
-            //    .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", null);
-
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+               .AddJwtBearer(options =>
+               {
+                   options.TokenValidationParameters = new TokenValidationParameters
+                   {
+                       ValidateIssuer = true,
+                       ValidateAudience = true,
+                       ValidateLifetime = true,
+                       ValidateIssuerSigningKey = true,
+                       ValidIssuer = Configuration.GetSection("Jwt:Issuer").Value,
+                       ValidAudience = Configuration.GetSection("Jwt:Issuer").Value,
+                       IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration.GetSection("Jwt:Key").Value))
+                   };
+               });
             services.AddTransient(typeof(ISequelConnection), typeof(DevSqlConnection));
             services.AddTransient(typeof(IDBService), typeof(DBService));
             services.AddTransient<IUserSecurityService, UserSecurityService>();

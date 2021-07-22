@@ -1,6 +1,7 @@
 
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Moq;
 using NUnit.Framework;
 using System;
@@ -16,13 +17,14 @@ namespace WalletApp.Controller.Tests
     {
         private Mock<IUserSecurityService> dbUserService;
 		private Mock<IUserWalletAccountService> dbWalletAcctService;
+		private Mock<IConfiguration> config;
 
 		[SetUp]
         public void Setup()
         {
             dbUserService = new Mock<IUserSecurityService>();
 			dbWalletAcctService = new Mock<IUserWalletAccountService>();
-
+			config = new Mock<IConfiguration>();
 		}
 
 		[Test]
@@ -119,7 +121,8 @@ namespace WalletApp.Controller.Tests
 			var userController = new UserController
 				(
 					dbUserService.Object,
-					dbWalletAcctService.Object
+					dbWalletAcctService.Object,
+					config.Object
 				);
 
 			return userController;
