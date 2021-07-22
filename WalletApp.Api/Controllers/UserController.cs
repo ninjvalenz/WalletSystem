@@ -109,6 +109,8 @@ namespace WalletApp.Api.Controllers
          
         }
 
+        [HttpGet]
+
         private string GenerateJSONWebToken()
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config.GetValue<string>("Jwt:Key")));
