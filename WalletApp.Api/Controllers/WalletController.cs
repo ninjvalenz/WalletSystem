@@ -103,5 +103,63 @@ namespace WalletApp.Api.Controllers
             }
 
         }
+
+        [HttpPost("historyall")]
+        public async Task<IActionResult> HistoryAll([FromBody] HistoryAllViewModel model)
+        {
+            try
+            {
+                if (model == null ||
+                    !model.AccountNumber.HasValue ||
+                    !model.Offset.HasValue)
+                    throw new RequiredFieldsException();
+
+                var result = await walletTransactionService.ViewTransactionHistoryAll(model.AccountNumber.Value, model.Offset.Value);
+                if (result != null)
+                {
+                    if (result.IsSuccess)
+                        return Ok(result);
+
+                    throw new Exception(result.Message);
+                }
+
+                throw new ServerProblemException();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+        }
+
+        [HttpPost("historybyrange")] //Date format from the body should be like this: "2021-07-21"
+        public async Task<IActionResult> HistoryByRange([FromBody] HistoryByRangeViewModel model)
+        {
+            try
+            {
+                if (model == null ||
+                    !model.AccountNumber.HasValue ||
+                    !model.FromDate.HasValue ||
+                    !model.ToDate.HasValue)
+                    throw new RequiredFieldsException();
+
+                var result = await walletTransactionService.ViewTransactionHistoryByRange(
+                    model.AccountNumber.Value, model.FromDate.Value, model.ToDate.Value);
+                if (result != null)
+                {
+                    if (result.IsSuccess)
+                        return Ok(result);
+
+                    throw new Exception(result.Message);
+                }
+
+                throw new ServerProblemException();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+        }
     }
 }
