@@ -1,5 +1,10 @@
 # WalletSystem
 
+- NetCore 3.1
+- NUnit
+- Moq
+- JwtBearer
+ 
 After cloning the code, here are the steps on running the project locally:
 
 1. Create local DB named "WalletApp"
