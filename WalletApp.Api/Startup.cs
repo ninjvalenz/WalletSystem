@@ -14,7 +14,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WalletApp.Api.Helper;
 using WalletApp.Service;
 using WalletApp.Service.ConnectionStrings;
 using WalletApp.Service.Interface;

@@ -1,21 +1,49 @@
 # WalletSystem
 
-https://yourlocalhost/api/user/register
+After cloning the code, here are the steps on running the project locally:
 
-request body:
-{
-    "Login": "jvalenzona",
-    "Password": "P@ssw0rd"
-}
+1. Create local DB named "WalletApp"
+2. Run all the scripts from WalletApp.Database/Initializations. Please take note of the numbering sequence.
+3. Set the project WalletApp.Api as the startup project.
+4. Run the project. 
+5. Using postman (or any other preferred tool), register an account: 
+    https://yourlocalhost/api/user/register
 
-success payload:
-{
-    "accountNumber": 151007544471,
-    "message": null,
-    "infoMessage": null,
-    "isSuccess": true
-}
+    request body:
+    {
+        "Login": "jvalenzona",
+        "Password": "P@ssw0rd"
+    }
 
+    success payload:
+    {
+        "accountNumber": 151007544471,
+        "message": null,
+        "infoMessage": null,
+        "isSuccess": true
+    }
+
+6. After registering, login using your credentials:
+    https://yourlocalhost/api/user/authenticate
+
+    request body:
+    {
+        "Username": "jvalenzona",
+        "Password": "P@ssw0rddd"
+    }
+
+    success payload:
+    {
+        "message": "You are now logged in using login name jvalenzona. Wallet account(s): 151007544471",
+        "isSuccess": true,
+        "token": "A very long string. Copy this and use this to other api calls."
+    }
+
+7. Get the "token" received after authenticating. From the postman's Authorization's tab, select "Bearer Token" type and set the token value. 
+This is essential for all the api calls.
+
+
+Below are the other api calls you can use:
 https://yourlocalhost/api/wallet/deposit
 
 request body:
