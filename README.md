@@ -1,6 +1,6 @@
 # WalletSystem
 
-https://localhost:44369/api/user/register
+https://yourlocalhost/api/user/register
 
 request body:
 {
@@ -16,7 +16,7 @@ success payload:
     "isSuccess": true
 }
 
-https://localhost:44369/api/wallet/deposit
+https://yourlocalhost/api/wallet/deposit
 
 request body:
 {
@@ -31,12 +31,12 @@ success payload:
     "isSuccess": true
 }
 
-https://localhost:44369/api/wallet/withdraw
+https://yourlocalhost/api/wallet/withdraw
 
 request body:
 {
     "AccountNumber": 151007544471,
-    "Amount": 100
+    "Amount": 100s
 }
 
 success payload:
@@ -46,7 +46,7 @@ success payload:
     "isSuccess": true
 }
 
-https://localhost:44369/api/wallet/transfer
+https://yourlocalhost/api/wallet/transfer
 
 request body:
 {
@@ -62,7 +62,7 @@ success payload:
     "isSuccess": true
 }
 
-https://localhost:44369/api/wallet/historyall
+https://yourlocalhost/api/wallet/historyall
 
 request body:
 {
@@ -111,7 +111,7 @@ success payload:
 }
 
 
-https://localhost:44369/api/wallet/historybyrange
+https://yourlocalhost/api/wallet/historybyrange
 
 request body:
 {
