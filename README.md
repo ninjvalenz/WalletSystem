@@ -29,7 +29,7 @@ After cloning the code, here are the steps on running the project locally:
     request body:
     {
         "Username": "jvalenzona",
-        "Password": "P@ssw0rddd"
+        "Password": "P@ssw0rd"
     }
 
     success payload:
