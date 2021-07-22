@@ -11,6 +11,7 @@ BEGIN
 
 	DECLARE @HasSufficientBal bit = 0
 	DECLARE @TotalBalance decimal(18,0) = 0
+	DECLARE @EndBalance decimal(18,0) = 0 
 
 	EXEC dbo.CheckBalance @AccountNumber, @TotalBalance OUTPUT
 
@@ -18,6 +19,7 @@ BEGIN
 	BEGIN
 		
 		SET @HasSufficientBal = 1
+		SET @EndBalance = COALESCE(@TotalBalance, 0) - @Amount
 
 		INSERT INTO UserWalletTransaction
 		(
@@ -33,10 +35,14 @@ BEGIN
 			   2, --Transactiontype withdraw
 			   @Amount * -1,
 			   GETDATE(),
-			   COALESCE(@TotalBalance, 0) - @Amount
+			   @EndBalance
+
+		UPDATE UserWalletAccount
+		SET Balance = @EndBalance
+		WHERE AccountNumber = @AccountNumber
 
 	END
 
-	SELECT @HasSufficientBal as IsSuccess
+	SELECT @HasSufficientBal as IsSuccess, @EndBalance as EndBalance
    
 END

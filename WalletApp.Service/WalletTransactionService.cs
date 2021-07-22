@@ -91,13 +91,22 @@ namespace WalletApp.Service
                 if (amount <= 0) throw new TooLowAmountException();
                 if (amount > 99999999) throw new MaximumAllowableAmountException();
                 
-                await dBService.ExecuteNonQuery("DepositMoney", new SqlParameter[]
+                var domainResult = await dBService.ExecuteQuery("DepositMoney", new SqlParameter[]
                     {
                         new SqlParameter() { ParameterName = "AccountNumber", Value = accountNumber },
                         new SqlParameter() { ParameterName = "Amount", Value = amount }
                     }, CommandType.StoredProcedure);
 
-              
+                if (domainResult != null &&
+                    domainResult.Rows != null &&
+                    domainResult.Rows.Count > 0)
+                {
+                    var endBal = domainResult.Rows[0]["EndBalance"] != null ?
+                            (decimal)domainResult.Rows[0]["EndBalance"] : 0;
+
+                    depositMoneyViewModel.InfoMessage = $"Success! End balance is now {endBal}";
+                }
+
             }
             catch(Exception ex)
             {
@@ -130,6 +139,14 @@ namespace WalletApp.Service
                 {
                     if(!(bool)domainResult.Rows[0]["IsSuccess"])
                         throw new InsufficientWalletBalanceException();
+                    else
+                    {
+                        var endBal = domainResult.Rows[0]["EndBalance"] != null ?
+                            (decimal)domainResult.Rows[0]["EndBalance"] : 0;
+
+                        withdrawMoneyViewModel.InfoMessage = $"Success! End balance is now {endBal}";
+
+                    }
                 }
 
             }
@@ -165,6 +182,14 @@ namespace WalletApp.Service
                 {
                     if (!(bool)domainResult.Rows[0]["IsSuccess"])
                         throw new InsufficientWalletBalanceException();
+                    else
+                    {
+                        var endBal = domainResult.Rows[0]["EndBalance"] != null ?
+                            (decimal)domainResult.Rows[0]["EndBalance"] : 0;
+
+                        transferMoneyViewModel.InfoMessage = $"Success! End balance is now {endBal}";
+
+                    }
                 }
             }
             catch (Exception ex)
