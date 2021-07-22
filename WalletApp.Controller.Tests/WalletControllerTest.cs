@@ -110,6 +110,8 @@ namespace WalletApp.Controller.Tests
             Assert.NotNull(result);
             Assert.IsInstanceOf<IActionResult>(result);
             Assert.AreEqual(((ObjectResult)result).Value.GetType(), typeof(DepositMoneyViewModel));
+            Assert.IsNull(((MethodResult)((ObjectResult)result).Value).InfoMessage);
+            Assert.IsNull(((MethodResult)((ObjectResult)result).Value).Message);
 
         }
 
@@ -225,6 +227,8 @@ namespace WalletApp.Controller.Tests
             Assert.NotNull(result);
             Assert.IsInstanceOf<IActionResult>(result);
             Assert.AreEqual(((ObjectResult)result).Value.GetType(), typeof(WithdrawMoneyViewModel));
+            Assert.IsNull(((MethodResult)((ObjectResult)result).Value).InfoMessage);
+            Assert.IsNull(((MethodResult)((ObjectResult)result).Value).Message);
 
         }
 
@@ -344,6 +348,156 @@ namespace WalletApp.Controller.Tests
             Assert.NotNull(result);
             Assert.IsInstanceOf<IActionResult>(result);
             Assert.AreEqual(((ObjectResult)result).Value.GetType(), typeof(TransferMoneyViewModel));
+            Assert.IsNull(((MethodResult)((ObjectResult)result).Value).InfoMessage);
+            Assert.IsNull(((MethodResult)((ObjectResult)result).Value).Message);
+
+        }
+
+        #endregion
+
+        #region Report
+
+        [Test]
+        public void WalletController_HistoryAll_BadRequest_RequiredFieldsException()
+        {
+            var controller = GetWalletController();
+
+            //Arrange
+            dbWalletTransactionService.Setup(x => x.ViewTransactionHistoryAll(It.IsAny<long>(), It.IsAny<int>()).Result)
+               .Returns(new TransactionHistoryListViewModel() { });
+
+            //Act
+            var result = controller.HistoryAll(new Model.ViewModel.RequestBodyModel.HistoryAllViewModel(){}).Result;
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<IActionResult>(result);
+            Assert.AreEqual(((ObjectResult)result).Value, new RequiredFieldsException().Message);
+
+        }
+
+        [Test]
+        public void WalletController_HistoryAll_Ok_EndOfLine()
+        {
+            var controller = GetWalletController();
+
+            //Arrange
+            dbWalletTransactionService.Setup(x => x.ViewTransactionHistoryAll(It.IsAny<long>(), It.IsAny<int>()).Result)
+               .Returns(new TransactionHistoryListViewModel()
+               {
+                   InfoMessage = "No more records to be display"
+               });
+
+            //Act
+            var result = controller.HistoryAll(new Model.ViewModel.RequestBodyModel.HistoryAllViewModel()
+            {
+                AccountNumber = 111111111111,
+                Offset = 10000
+            }).Result;
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<IActionResult>(result);
+            Assert.AreEqual(((ObjectResult)result).Value.GetType(), typeof(TransactionHistoryListViewModel));
+            Assert.AreEqual(((MethodResult)((ObjectResult)result).Value).InfoMessage, "No more records to be display");
+           
+        }
+
+        [Test]
+        public void WalletController_HistoryAll_Ok()
+        {
+            var controller = GetWalletController();
+
+            //Arrange
+            dbWalletTransactionService.Setup(x => x.ViewTransactionHistoryAll(It.IsAny<long>(), It.IsAny<int>()).Result)
+               .Returns(new TransactionHistoryListViewModel(){});
+
+            //Act
+            var result = controller.HistoryAll(new Model.ViewModel.RequestBodyModel.HistoryAllViewModel()
+            {
+                AccountNumber = 111111111111,
+                Offset = 10000
+            }).Result;
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<IActionResult>(result);
+            Assert.AreEqual(((ObjectResult)result).Value.GetType(), typeof(TransactionHistoryListViewModel));
+            Assert.IsNull(((MethodResult)((ObjectResult)result).Value).InfoMessage);
+            Assert.IsNull(((MethodResult)((ObjectResult)result).Value).Message);
+
+        }
+
+        [Test]
+        public void WalletController_HistoryByRange_BadRequest_RequiredFieldsException()
+        {
+            var controller = GetWalletController();
+
+            //Arrange
+            dbWalletTransactionService.Setup(x => x.ViewTransactionHistoryByRange(It.IsAny<long>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()).Result)
+               .Returns(new TransactionHistoryListViewModel() { });
+
+            //Act
+            var result = controller.HistoryByRange(new Model.ViewModel.RequestBodyModel.HistoryByRangeViewModel() { }).Result;
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<IActionResult>(result);
+            Assert.AreEqual(((ObjectResult)result).Value, new RequiredFieldsException().Message);
+
+        }
+
+        [Test]
+        public void WalletController_HistoryByRange_Ok_EndOfLine()
+        {
+            var controller = GetWalletController();
+
+            //Arrange
+            dbWalletTransactionService.Setup(x => x.ViewTransactionHistoryByRange(It.IsAny<long>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()).Result)
+               .Returns(new TransactionHistoryListViewModel()
+               {
+                   InfoMessage = "No more records to be display"
+               });
+
+            //Act
+            var result = controller.HistoryByRange(new Model.ViewModel.RequestBodyModel.HistoryByRangeViewModel()
+            {
+                AccountNumber = 111111111111,
+                FromDate = DateTime.Now,
+                ToDate = DateTime.Now
+            }).Result;
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<IActionResult>(result);
+            Assert.AreEqual(((ObjectResult)result).Value.GetType(), typeof(TransactionHistoryListViewModel));
+            Assert.AreEqual(((MethodResult)((ObjectResult)result).Value).InfoMessage, "No more records to be display");
+
+        }
+
+        [Test]
+        public void WalletController_HistoryByRange_Ok()
+        {
+            var controller = GetWalletController();
+
+            //Arrange
+            dbWalletTransactionService.Setup(x => x.ViewTransactionHistoryByRange(It.IsAny<long>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()).Result)
+               .Returns(new TransactionHistoryListViewModel() { });
+
+            //Act
+            var result = controller.HistoryByRange(new Model.ViewModel.RequestBodyModel.HistoryByRangeViewModel()
+            {
+                AccountNumber = 111111111111,
+                FromDate = DateTime.Now,
+                ToDate = DateTime.Now
+            }).Result;
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<IActionResult>(result);
+            Assert.AreEqual(((ObjectResult)result).Value.GetType(), typeof(TransactionHistoryListViewModel));
+            Assert.IsNull(((MethodResult)((ObjectResult)result).Value).InfoMessage);
+            Assert.IsNull(((MethodResult)((ObjectResult)result).Value).Message);
 
         }
 
