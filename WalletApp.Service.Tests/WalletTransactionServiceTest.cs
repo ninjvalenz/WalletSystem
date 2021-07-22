@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Text;
+using WalletApp.Model.ViewModel.Exceptions;
 using WalletApp.Service.ConnectionStrings;
 using WalletApp.Service.Interface;
 
@@ -137,7 +138,7 @@ namespace WalletApp.Service.Tests
             //Assert
             Assert.NotNull(result);
             Assert.AreEqual(result.IsSuccess, false);
-            Assert.AreEqual(result.Message, "Amount is too small!");
+            Assert.AreEqual(result.Message, new TooLowAmountException().Message);
 
         }
 
@@ -154,7 +155,7 @@ namespace WalletApp.Service.Tests
             //Assert
             Assert.NotNull(result);
             Assert.AreEqual(result.IsSuccess, false);
-            Assert.AreEqual(result.Message, "Maximum allowable amount exceeded!");
+            Assert.AreEqual(result.Message, new MaximumAllowableAmountException().Message);
 
         }
 
@@ -193,7 +194,7 @@ namespace WalletApp.Service.Tests
             //Assert
             Assert.NotNull(result);
             Assert.AreEqual(result.IsSuccess, false);
-            Assert.AreEqual(result.Message, "Amount is too small!");
+            Assert.AreEqual(result.Message, new TooLowAmountException().Message);
 
         }
         [Test]
@@ -210,7 +211,7 @@ namespace WalletApp.Service.Tests
             //Assert
             Assert.NotNull(result);
             Assert.AreEqual(result.IsSuccess, false);
-            Assert.AreEqual(result.Message, "Maximum allowable amount exceeded!");
+            Assert.AreEqual(result.Message, new MaximumAllowableAmountException().Message);
 
         }
         [Test]
@@ -227,7 +228,7 @@ namespace WalletApp.Service.Tests
             //Assert
             Assert.NotNull(result);
             Assert.AreEqual(result.IsSuccess, false);
-            Assert.AreEqual(result.Message, "Insufficient balance on the wallet!");
+            Assert.AreEqual(result.Message, new InsufficientWalletBalanceException().Message);
 
         }
 
@@ -266,7 +267,7 @@ namespace WalletApp.Service.Tests
             //Assert
             Assert.NotNull(result);
             Assert.AreEqual(result.IsSuccess, false);
-            Assert.AreEqual(result.Message, "Amount is too small!");
+            Assert.AreEqual(result.Message, new TooLowAmountException().Message);
 
         }
         [Test]
@@ -283,7 +284,7 @@ namespace WalletApp.Service.Tests
             //Assert
             Assert.NotNull(result);
             Assert.AreEqual(result.IsSuccess, false);
-            Assert.AreEqual(result.Message, "Maximum allowable amount exceeded!");
+            Assert.AreEqual(result.Message, new MaximumAllowableAmountException().Message);
 
         }
         [Test]
@@ -300,7 +301,7 @@ namespace WalletApp.Service.Tests
             //Assert
             Assert.NotNull(result);
             Assert.AreEqual(result.IsSuccess, false);
-            Assert.AreEqual(result.Message, "Insufficient balance on the wallet!");
+            Assert.AreEqual(result.Message, new InsufficientWalletBalanceException().Message);
 
         }
 
