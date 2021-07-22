@@ -26,7 +26,7 @@ namespace WalletApp.Controller.Tests
 		}
 
 		[Test]
-		public void UserController_Returns_BadRequest_UnableToRegisterUserException()
+		public void UserController__RegisterUser_Returns_BadRequest_UnableToRegisterUserException()
         {
 			var controller = GetUserController();
 
@@ -46,7 +46,7 @@ namespace WalletApp.Controller.Tests
 		}
 
 		[Test]
-		public void UserController_Returns_BadRequest_UnableToRegisterWalletException()
+		public void UserController_RegisterUser_Returns_BadRequest_UnableToRegisterWalletException()
 		{
 			var controller = GetUserController();
 
@@ -69,13 +69,13 @@ namespace WalletApp.Controller.Tests
 		}
 
 		[Test]
-		public void UserController_Returns_BadRequest_RequiredFieldsException()
+		public void UserController_RegisterUser_Returns_BadRequest_RequiredFieldsException()
 		{
 			var controller = GetUserController();
 
 			//Arrange
 			dbUserService.Setup(x => x.RegisterUser(It.IsAny<string>(), It.IsAny<string>()).Result)
-				.Returns(GenerateRegisterUserViewModelData_UnableToRegisterUserException());
+				.Returns(new RegisterUserViewModel());
 
 
 			//Act
@@ -84,12 +84,12 @@ namespace WalletApp.Controller.Tests
 			//Assert
 			Assert.NotNull(result);
 			Assert.IsInstanceOf<IActionResult>(result);
-			Assert.AreEqual(((ObjectResult)result).Value, new UnableToRegisterUserException().Message);
+			Assert.AreEqual(((ObjectResult)result).Value, new RequiredFieldsException().Message);
 
 		}
 
 		[Test]
-		public void UserController_Returns_Ok()
+		public void UserController_RegisterUser_Returns_Ok()
 		{
 			var controller = GetUserController();
 
