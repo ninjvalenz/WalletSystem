@@ -97,7 +97,7 @@ namespace WalletApp.Controller.Tests
 
             //Arrange
             dbWalletTransactionService.Setup(x => x.DepositMoney(It.IsAny<long>(), 100).Result)
-                .Returns(new DepositMoneyViewModel());
+                .Returns(new DepositMoneyViewModel() { InfoMessage = "Success"});
 
             //Act
             var result = controller.Deposit(new Model.ViewModel.RequestBodyModel.TransactionViewModel() 
@@ -110,7 +110,7 @@ namespace WalletApp.Controller.Tests
             Assert.NotNull(result);
             Assert.IsInstanceOf<IActionResult>(result);
             Assert.AreEqual(((ObjectResult)result).Value.GetType(), typeof(DepositMoneyViewModel));
-            Assert.IsNull(((MethodResult)((ObjectResult)result).Value).InfoMessage);
+            Assert.IsNotNull(((MethodResult)((ObjectResult)result).Value).InfoMessage);
             Assert.IsNull(((MethodResult)((ObjectResult)result).Value).Message);
 
         }
@@ -214,7 +214,7 @@ namespace WalletApp.Controller.Tests
 
             //Arrange
             dbWalletTransactionService.Setup(x => x.WithdrawMoney(It.IsAny<long>(), 100).Result)
-                .Returns(new WithdrawMoneyViewModel());
+                .Returns(new WithdrawMoneyViewModel() { InfoMessage = "Success" });
 
             //Act
             var result = controller.Withdraw(new Model.ViewModel.RequestBodyModel.TransactionViewModel()
@@ -227,7 +227,7 @@ namespace WalletApp.Controller.Tests
             Assert.NotNull(result);
             Assert.IsInstanceOf<IActionResult>(result);
             Assert.AreEqual(((ObjectResult)result).Value.GetType(), typeof(WithdrawMoneyViewModel));
-            Assert.IsNull(((MethodResult)((ObjectResult)result).Value).InfoMessage);
+            Assert.IsNotNull(((MethodResult)((ObjectResult)result).Value).InfoMessage);
             Assert.IsNull(((MethodResult)((ObjectResult)result).Value).Message);
 
         }
@@ -334,7 +334,7 @@ namespace WalletApp.Controller.Tests
 
             //Arrange
             dbWalletTransactionService.Setup(x => x.TransferMoney(It.IsAny<long>(), It.IsAny<long>(), 100).Result)
-                .Returns(new TransferMoneyViewModel());
+                .Returns(new TransferMoneyViewModel() { InfoMessage = "Success" });
 
             //Act
             var result = controller.Transfer(new Model.ViewModel.RequestBodyModel.NewTransferViewModel()
@@ -348,7 +348,7 @@ namespace WalletApp.Controller.Tests
             Assert.NotNull(result);
             Assert.IsInstanceOf<IActionResult>(result);
             Assert.AreEqual(((ObjectResult)result).Value.GetType(), typeof(TransferMoneyViewModel));
-            Assert.IsNull(((MethodResult)((ObjectResult)result).Value).InfoMessage);
+            Assert.IsNotNull(((MethodResult)((ObjectResult)result).Value).InfoMessage);
             Assert.IsNull(((MethodResult)((ObjectResult)result).Value).Message);
 
         }

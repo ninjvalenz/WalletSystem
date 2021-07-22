@@ -112,7 +112,8 @@ namespace WalletApp.Service.Tests
         {
             var service = GetWalletTransactionService();
             //Arrange
-            dbService.Setup(x => x.ExecuteNonQuery(It.IsAny<string>(), It.IsAny<SqlParameter[]>(), It.IsAny<CommandType>()));
+            dbService.Setup(x => x.ExecuteQuery(It.IsAny<string>(), It.IsAny<SqlParameter[]>(), It.IsAny<CommandType>()).Result)
+                .Returns(GenerateSuccessCredit());
 
             //Act
             var result = service.DepositMoney(It.IsAny<long>(), 99999999).Result;
@@ -121,7 +122,7 @@ namespace WalletApp.Service.Tests
             Assert.NotNull(result);
             Assert.AreEqual(result.IsSuccess, true);
             Assert.IsNull(result.Message);
-            Assert.IsNull(result.InfoMessage);
+            Assert.IsNotNull(result.InfoMessage);
 
         }
 
@@ -178,6 +179,7 @@ namespace WalletApp.Service.Tests
             Assert.NotNull(result);
             Assert.AreEqual(result.IsSuccess, true);
             Assert.IsNull(result.Message);
+            Assert.IsNotNull(result.InfoMessage);
 
         }
         [Test]
@@ -251,6 +253,7 @@ namespace WalletApp.Service.Tests
             Assert.NotNull(result);
             Assert.AreEqual(result.IsSuccess, true);
             Assert.IsNull(result.Message);
+            Assert.IsNotNull(result.InfoMessage);
 
         }
         [Test]
@@ -349,9 +352,11 @@ namespace WalletApp.Service.Tests
         {
             DataTable dt = new DataTable();
             dt.Columns.Add(new DataColumn() { ColumnName = "IsSuccess", DataType = typeof(bool) });
+            dt.Columns.Add(new DataColumn() { ColumnName = "EndBalance", DataType = typeof(decimal) });
 
             DataRow row1 = dt.NewRow();
             row1["IsSuccess"] = true;
+            row1["EndBalance"] = 1500;
             dt.Rows.Add(row1);
 
             return dt;

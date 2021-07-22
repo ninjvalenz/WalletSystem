@@ -48,7 +48,6 @@ namespace WalletApp.Api.Controllers
 
         }
 
-        [AllowAnonymous]
         [HttpPost("withdraw")]
         public async Task<IActionResult> Withdraw([FromBody] TransactionViewModel model)
         {
