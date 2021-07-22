@@ -83,7 +83,7 @@ namespace WalletApp.Api.Controllers
 
                 }
 
-                //if everything fails...(kahit ginawa mo na lahat, di pa din ikaw ang mahal nya wahahah)
+                //if everything fails...
                 throw new ServerProblemException();
 
             }
