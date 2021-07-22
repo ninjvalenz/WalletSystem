@@ -27,10 +27,6 @@ namespace WalletApp.Api.Controllers
             userWalletAccountService = _userWalletAccountService;
         }
 
-        public async Task<IActionResult> Test()
-        {
-            return Ok();
-        }
         [AllowAnonymous]
         [HttpPost("authenticate")]
         public async Task<IActionResult> Authenticate([FromBody] LoginViewModel model)
@@ -63,7 +59,7 @@ namespace WalletApp.Api.Controllers
         {
             try
             {
-                if (string.IsNullOrEmpty(model.Login) || string.IsNullOrEmpty(model.Password))
+                if (model == null || string.IsNullOrEmpty(model.Login) || string.IsNullOrEmpty(model.Password))
                     throw new RequiredFieldsException();
 
                 //Register user 
@@ -78,12 +74,13 @@ namespace WalletApp.Api.Controllers
                         {
                             if (walletResult.IsSuccess)
                                 return Ok(walletResult);
-                            else
-                                throw new Exception(walletResult.Message);
+
+                            throw new Exception(walletResult.Message);
                         }
                     }
-                    else
-                        throw new Exception(userResult.Message);
+
+                    throw new Exception(userResult.Message);
+
                 }
 
                 //if everything fails...(kahit ginawa mo na lahat)

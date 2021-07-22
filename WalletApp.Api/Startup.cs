@@ -40,6 +40,7 @@ namespace WalletApp.Api
             services.AddTransient(typeof(IDBService), typeof(DBService));
             services.AddTransient<IUserSecurityService, UserSecurityService>();
             services.AddTransient<IUserWalletAccountService, UserWalletAccountService>();
+            services.AddTransient<IWalletTransactionService, WalletTransactionService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
