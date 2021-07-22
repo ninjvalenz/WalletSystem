@@ -11,9 +11,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WalletApp.Service", "Wallet
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WalletApp.Service.Tests", "WalletApp.Service.Tests\WalletApp.Service.Tests.csproj", "{D03AD32E-3DC0-4924-B742-474B78232EAB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WalletApp.Api", "WalletApp.Api\WalletApp.Api.csproj", "{360E129E-7E13-422B-B39B-69DF7CF76E3C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WalletApp.Api", "WalletApp.Api\WalletApp.Api.csproj", "{360E129E-7E13-422B-B39B-69DF7CF76E3C}"
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "WalletApp.Database", "WalletApp.Database\WalletApp.Database.sqlproj", "{1CD3BF06-9EC9-47AC-8A77-D8C11512C2A4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WalletApp.Controller.Tests", "WalletApp.Controller.Tests\WalletApp.Controller.Tests.csproj", "{58E7E961-B1B7-4248-9FF9-96B62F7758BE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{948708CD-EAC6-4D37-B300-8623739F11AE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,9 +51,17 @@ Global
 		{1CD3BF06-9EC9-47AC-8A77-D8C11512C2A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1CD3BF06-9EC9-47AC-8A77-D8C11512C2A4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1CD3BF06-9EC9-47AC-8A77-D8C11512C2A4}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{58E7E961-B1B7-4248-9FF9-96B62F7758BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{58E7E961-B1B7-4248-9FF9-96B62F7758BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{58E7E961-B1B7-4248-9FF9-96B62F7758BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{58E7E961-B1B7-4248-9FF9-96B62F7758BE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D03AD32E-3DC0-4924-B742-474B78232EAB} = {948708CD-EAC6-4D37-B300-8623739F11AE}
+		{58E7E961-B1B7-4248-9FF9-96B62F7758BE} = {948708CD-EAC6-4D37-B300-8623739F11AE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E0F800C7-4719-44A7-A8E3-5E8AFE979271}

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Text;
+using WalletApp.Model.ViewModel.Exceptions;
 using WalletApp.Service.Interface;
 
 namespace WalletApp.Service.Tests
@@ -39,7 +40,7 @@ namespace WalletApp.Service.Tests
             //Assert
             Assert.NotNull(result);
             Assert.AreEqual(result.IsSuccess, false);
-            Assert.AreEqual(result.Message, "Unable to register new wallet account. Contact the developer.");
+            Assert.AreEqual(result.Message, new UnableToRegisterWalletException().Message);
 
         }
 

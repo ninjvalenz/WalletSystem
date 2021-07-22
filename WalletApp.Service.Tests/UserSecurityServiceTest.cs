@@ -6,6 +6,7 @@ using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
 using WalletApp.Model.DomainModel;
+using WalletApp.Model.ViewModel.Exceptions;
 using WalletApp.Service.ConnectionStrings;
 using WalletApp.Service.Interface;
 
@@ -41,7 +42,7 @@ namespace WalletApp.Service.Tests
             //Assert
             Assert.NotNull(result);
             Assert.AreEqual(result.IsSuccess, false);
-            Assert.AreEqual(result.Message, "Invalid credentials!");
+            Assert.AreEqual(result.Message, new UnauthorizedUserException().Message);
 
         }
 
@@ -78,7 +79,7 @@ namespace WalletApp.Service.Tests
             //Assert
             Assert.NotNull(result);
             Assert.AreEqual(result.IsSuccess, false);
-            Assert.AreEqual(result.Message, "Unable to register. Login already exists!");
+            Assert.AreEqual(result.Message, new UnableToRegisterUserException().Message);
 
         }
 

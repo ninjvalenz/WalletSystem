@@ -18,3 +18,7 @@
 /WalletApp.Database/obj/Debug
 /WalletApp.Database/WalletApp.Database.dbmdl
 /WalletApp.Database/WalletApp.Database.jfm
+/WalletApp.Api/WalletApp.Api.csproj.user
+/WalletApp.Controller.Tests/bin/Debug/netcoreapp3.1
+/WalletApp.Controller.Tests/obj
+/WalletApp.Database/bin/Debug
