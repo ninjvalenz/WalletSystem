@@ -59,6 +59,7 @@
     <Folder Include="dbo\" />
     <Folder Include="dbo\Tables\" />
     <Folder Include="dbo\Stored Procedures\" />
+    <Folder Include="dbo\Initializations" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\UserWalletTransaction.sql" />
@@ -74,5 +75,8 @@
     <Build Include="dbo\Stored Procedures\DepositMoney.sql" />
     <Build Include="dbo\Stored Procedures\CheckBalance.sql" />
     <Build Include="dbo\Stored Procedures\AuthenticateLogin.sql" />
+    <None Include="dbo\Initializations\01_Tables-schema.sql" />
+    <None Include="dbo\Initializations\02_SP.sql" />
+    <None Include="dbo\Initializations\03_InitializationData.sql" />
   </ItemGroup>
 </Project>

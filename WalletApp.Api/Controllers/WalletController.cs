@@ -11,6 +11,7 @@ using WalletApp.Service.Interface;
 
 namespace WalletApp.Api.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class WalletController : ControllerBase
