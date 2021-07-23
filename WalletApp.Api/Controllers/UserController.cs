@@ -37,35 +37,46 @@ namespace WalletApp.Api.Controllers
         [HttpPost("authenticate")]
         public async Task<IActionResult> Authenticate([FromBody] LoginViewModel model)
         {
-            var user = await userSecurityService.AuthenticateUser(model.Username, model.Password);
             var resultViewModel = new PayloadViewModel();
 
-            if (user != null)
+            try
             {
-                resultViewModel.IsSuccess = user.IsSuccess;
+                if (model == null || string.IsNullOrEmpty(model.Username) || string.IsNullOrEmpty(model.Password))
+                    throw new RequiredFieldsException();
 
-                if (!user.IsSuccess)
+                var user = await userSecurityService.AuthenticateUser(model.Username, model.Password);
+              
+                if (user != null)
                 {
-                    resultViewModel.Message = user.Message;
+                    resultViewModel.IsSuccess = user.IsSuccess;
 
-                    return BadRequest(resultViewModel);
-                }
-                else
-                {
-                   
-                    var tokenString = GenerateJSONWebToken();
-                    resultViewModel.Message = $"You are now logged in using login name {user.Login}. ";
-
-                    if (user.AccountNumber != null && user.AccountNumber.Count > 0)
+                    if (!user.IsSuccess)
                     {
-                        var accounts = string.Join(",", user.AccountNumber);
-                        if (!string.IsNullOrEmpty(accounts))
-                            resultViewModel.Message += $"Wallet account(s): {accounts}";
+                        resultViewModel.Message = user.Message;
+
+                        throw new Exception(resultViewModel.Message);
                     }
-                    resultViewModel.Token = tokenString;
+                    else
+                    {
+
+                        var tokenString = GenerateJSONWebToken();
+                        resultViewModel.Message = $"You are now logged in using login name {user.Login}. ";
+
+                        if (user.AccountNumber != null && user.AccountNumber.Count > 0)
+                        {
+                            var accounts = string.Join(",", user.AccountNumber);
+                            if (!string.IsNullOrEmpty(accounts))
+                                resultViewModel.Message += $"Wallet account(s): {accounts}";
+                        }
+                        resultViewModel.Token = tokenString;
+                    }
                 }
             }
-
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+           
             return Ok(resultViewModel);
         }
        
