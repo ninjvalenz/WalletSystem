@@ -9,7 +9,7 @@
 
 1. Create local DB named "WalletApp"
 2. Run all the scripts from WalletApp.Database/Initializations. Please take note of the numbering sequence.
-3. Set the project WalletApp.Api as the startup project.
+3. After changing the value of "connectionStringDev" from the appsettings.json to the value of your local DB, set the project WalletApp.Api as the startup project.
 4. Run the project. 
 5. Using postman (or any other preferred tool), register an account (this will automatically create your wallet account): 
     https://yourlocalhost/api/user/register
