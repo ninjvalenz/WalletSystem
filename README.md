@@ -11,7 +11,7 @@
 2. Run all the scripts from WalletApp.Database/Initializations. Please take note of the numbering sequence.
 3. Set the project WalletApp.Api as the startup project.
 4. Run the project. 
-5. Using postman (or any other preferred tool), register an account: 
+5. Using postman (or any other preferred tool), register an account (this will automatically create your wallet account): 
     https://yourlocalhost/api/user/register
 
      ### request body:
@@ -33,7 +33,13 @@
         "isSuccess": true
     }
    ```
+   ### bad responses:
    
+   ```
+     RequiredFieldsException: All required fields should be filled in!
+     UnableToRegisterUserException: Unable to register. Login already exists!
+     UnableToRegisterWalletException: Unable to register new wallet account. Contact the developer.
+   ```
 6. After registering, login using your credentials:
     https://yourlocalhost/api/user/authenticate
 
@@ -54,7 +60,12 @@
         "token": "A very long string. Copy this and use this to other api calls."
     }
     ```
-
+   ### bad responses:
+   
+   ```
+       RequiredFieldsException: All required fields should be filled in!
+       UnauthorizedUserException: Invalid credentials!
+   ```
 7. Get the "token" received after authenticating. From the postman's Authorization's tab, select "Bearer Token" type and set the token value. 
 This is essential for all the api calls.
 
@@ -81,7 +92,13 @@ This is essential for all the api calls.
         "isSuccess": true
     }
     ```
-
+    ### bad responses:
+    
+    ```
+      RequiredFieldsException: All required fields should be filled in!
+      TooLowAmountException: Amount is too small! [if amount <= 0]
+      MaximumAllowableAmountException: Maximum allowable amount exceeded! [if amount > 99999999]
+    ```
 2. https://yourlocalhost/api/wallet/withdraw
 
     ### request body:
@@ -101,6 +118,14 @@ This is essential for all the api calls.
         "isSuccess": true
     }
     ```
+    ### bad responses:
+    
+    ```
+      RequiredFieldsException: All required fields should be filled in!
+      TooLowAmountException: Amount is too small! [if amount <= 0]
+      InsufficientWalletBalanceException: Insufficient balance on the wallet!
+      MaximumAllowableAmountException: Maximum allowable amount exceeded! [if amount > 99999999]
+    ```
 
 3. https://yourlocalhost/api/wallet/transfer
 
@@ -114,7 +139,7 @@ This is essential for all the api calls.
     }
     ```
 
-    ### success payload:
+   ### success payload:
     
     ```
     {
@@ -124,6 +149,14 @@ This is essential for all the api calls.
     }
     ```
 
+  ### bad responses:
+    
+    ```
+      RequiredFieldsException: All required fields should be filled in!
+      TooLowAmountException: Amount is too small! [if amount <= 0]
+      InsufficientWalletBalanceException: Insufficient balance on the wallet!
+      MaximumAllowableAmountException: Maximum allowable amount exceeded! [if amount > 99999999]
+    ```
 4. https://yourlocalhost/api/wallet/historyall
 
     ### request body:
@@ -176,6 +209,11 @@ This is essential for all the api calls.
     }
    ```
 
+ ### bad responses:
+    
+    ```
+      RequiredFieldsException: All required fields should be filled in!
+    ```
 5. https://yourlocalhost/api/wallet/historybyrange
 
     ### request body:
@@ -229,7 +267,14 @@ This is essential for all the api calls.
         "isSuccess": true
     }
    ```
-    success payload for end of line:
+   
+   ### bad responses:
+    
+    ```
+      RequiredFieldsException: All required fields should be filled in!
+    ```
+    
+   ### success payload for end of line [for both transaction reports]:
     
     ```
     {

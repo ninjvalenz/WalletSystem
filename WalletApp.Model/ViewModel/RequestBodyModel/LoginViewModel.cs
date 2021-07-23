@@ -7,10 +7,10 @@ namespace WalletApp.Model.ViewModel.RequestBodyModel
 {
     public class LoginViewModel
     {
-        [Required]
+       
         public string Username { get; set; }
 
-        [Required]
+      
         public string Password { get; set; }
     }
 }
