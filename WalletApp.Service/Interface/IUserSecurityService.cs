@@ -12,6 +12,10 @@ namespace WalletApp.Service.Interface
         Task<RegisterUserViewModel> RegisterUser(string login, string password);
         Task<QueueResultViewModel> InsertToQueue(string login, string password);
         Task<ProcessQueueResultViewModel> ProcessQueue();
-        Task<UpdateQueueViewModel> UpdateQueue(long queueId, int queueStatusId, string message);
+        Task<UpdateQueueViewModel> UpdateQueue(long queueId,
+                        int queueStatusId,
+                        string message,
+                        Guid userSecurityId,
+                        long? walletAccountNumber);
     }
 }

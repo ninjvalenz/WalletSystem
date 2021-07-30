@@ -93,6 +93,8 @@ namespace WalletApp.Service
                         var password = row["Password"].ToString();
                         string message = string.Empty;
                         bool isSuccess = false;
+                        Guid userId = Guid.Empty;
+                        long? walletAcctNumber = null; 
                       
                         //Call registeruser
                         var registerResult = await RegisterUser(login, password);
@@ -106,14 +108,25 @@ namespace WalletApp.Service
                             //Call register wallet
                             if (registerResult.IsSuccess)
                             {
+                                userId = registerResult.UserSecurityID;
+                              
                                 var registerWalletResult = await userWalletAccountService.RegisterWallet(registerResult.UserSecurityID);
-                                if (registerWalletResult != null && !registerWalletResult.IsSuccess)
-                                    queueItem.Message = registerWalletResult.Message;
+                                if (registerWalletResult != null)
+                                {
+                                    if (!registerWalletResult.IsSuccess)
+                                        queueItem.Message = registerWalletResult.Message;
+                                    else
+                                        walletAcctNumber = registerWalletResult.AccountNumber;
+
+                                    isSuccess = registerWalletResult.IsSuccess;
+                                }
+
+                                
                             }
                             else
                                 queueItem.Message = registerResult.Message;
 
-                            isSuccess = registerResult.IsSuccess;
+                            
 
                             processQueueResultView.QueueResultViewModels.Add(queueItem);
                             message = queueItem.Message;
@@ -123,7 +136,9 @@ namespace WalletApp.Service
                         await UpdateQueue(
                                        queueId,
                                        isSuccess ? (int)QueueStatusType.Success : (int)QueueStatusType.Failed,
-                                       message);
+                                       message,
+                                       userId,
+                                       walletAcctNumber);
                     }
                 }
                
@@ -137,7 +152,12 @@ namespace WalletApp.Service
             return processQueueResultView;
         }
 
-        public async Task<UpdateQueueViewModel> UpdateQueue(long queueId, int queueStatusId, string message)
+        public async Task<UpdateQueueViewModel> UpdateQueue(
+                        long queueId, 
+                        int queueStatusId, 
+                        string message,
+                        Guid userSecurityId,
+                        long? walletAccountNumber)
         {
             UpdateQueueViewModel updateQueueViewModel = new UpdateQueueViewModel();
             try
@@ -149,6 +169,8 @@ namespace WalletApp.Service
                         new SqlParameter() { ParameterName = "QueueId", Value = queueId },
                         new SqlParameter() { ParameterName = "QueueStatusId", Value = queueStatusId},
                         new SqlParameter() { ParameterName = "Message", Value = message },
+                        new SqlParameter() { ParameterName = "RegisteredUserId", Value = userSecurityId },
+                        new SqlParameter() { ParameterName = "RegisteredWalletAcctNo", Value = walletAccountNumber },
 
                     }, CommandType.StoredProcedure);
             }
