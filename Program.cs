@@ -26,7 +26,8 @@ namespace WalletApp
 
             do
             {
-                var userProcessResult = await userSecurityService.ProcessQueue();
+                //var userProcessResult = await userSecurityService.ProcessQueue();
+                var walletTransactionResult = await walletTransactionService.ProcessQueue();
             }
             while (true);
             

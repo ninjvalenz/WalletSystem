@@ -91,20 +91,19 @@ namespace WalletApp.Service
                         var queueId = (long)row["queueId"];
                         var login = row["Login"].ToString();
                         var password = row["Password"].ToString();
-                        string message = string.Empty;
-                        bool isSuccess = false;
                         Guid userId = Guid.Empty;
-                        long? walletAcctNumber = null; 
-                      
+                        long? walletAcctNumber = null;
+
+                        var queueItem = new QueueResultViewModel()
+                        {
+                            QueueId = queueId
+                        };
+
                         //Call registeruser
                         var registerResult = await RegisterUser(login, password);
                         if(registerResult != null)
                         {
-                            var queueItem = new QueueResultViewModel()
-                            {
-                                QueueId = queueId
-                            };
-
+                            
                             //Call register wallet
                             if (registerResult.IsSuccess)
                             {
@@ -113,30 +112,21 @@ namespace WalletApp.Service
                                 var registerWalletResult = await userWalletAccountService.RegisterWallet(registerResult.UserSecurityID);
                                 if (registerWalletResult != null)
                                 {
-                                    if (!registerWalletResult.IsSuccess)
-                                        queueItem.Message = registerWalletResult.Message;
-                                    else
-                                        walletAcctNumber = registerWalletResult.AccountNumber;
-
-                                    isSuccess = registerWalletResult.IsSuccess;
+                                    queueItem.Message = registerWalletResult.Message;
+                                    walletAcctNumber = registerWalletResult.AccountNumber;
                                 }
-
-                                
                             }
                             else
                                 queueItem.Message = registerResult.Message;
 
-                            
-
                             processQueueResultView.QueueResultViewModels.Add(queueItem);
-                            message = queueItem.Message;
                         }
 
                         //Update queue
                         await UpdateQueue(
                                        queueId,
-                                       isSuccess ? (int)QueueStatusType.Success : (int)QueueStatusType.Failed,
-                                       message,
+                                       queueItem.IsSuccess ? (int)QueueStatusType.Success : (int)QueueStatusType.Failed,
+                                       queueItem.Message,
                                        userId,
                                        walletAcctNumber);
                     }

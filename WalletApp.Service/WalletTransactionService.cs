@@ -5,6 +5,7 @@ using System.Data.SqlClient;
 using System.Text;
 using System.Threading.Tasks;
 using WalletApp.Model.DomainModel;
+using WalletApp.Model.Enums;
 using WalletApp.Model.ViewModel;
 using WalletApp.Model.ViewModel.Exceptions;
 using WalletApp.Service.ConnectionStrings;
@@ -201,7 +202,11 @@ namespace WalletApp.Service
 
         }
 
-        public async Task<QueueResultViewModel> InsertToQueue(long accountNumber, long? fromToAccountNumber, decimal amount, int transactionTypeId)
+        public async Task<QueueResultViewModel> InsertToQueue(
+                            long accountNumber, 
+                            long? fromToAccountNumber, 
+                            decimal amount, 
+                            int transactionTypeId)
         {
             QueueResultViewModel queueResultViewModel = new QueueResultViewModel();
             try
@@ -225,6 +230,108 @@ namespace WalletApp.Service
             }
 
             return queueResultViewModel;
+        }
+
+        public async Task<ProcessQueueResultViewModel> ProcessQueue()
+        {
+            ProcessQueueResultViewModel processQueueResultView = new ProcessQueueResultViewModel();
+            processQueueResultView.QueueResultViewModels = new List<QueueResultViewModel>();
+
+            try
+            {
+                //Call process queue
+                var domainResult = await dBService.ExecuteQuery("ProcessUserWalletTransacQueue",
+                  null, CommandType.StoredProcedure);
+
+
+                if (domainResult != null && domainResult.Rows != null && domainResult.Rows.Count > 0)
+                {
+                    foreach (DataRow row in domainResult.Rows)
+                    {
+                        var queueId = (long)row["queueId"];
+                        var userWalletAcctNo = (long)row["UserWalletAccountNumber"];
+                        var fromToAccountNumber = row["FromToAccountNumber"] == DBNull.Value ? 0 : (long)row["FromToAccountNumber"];
+                        var transactionTypeId = (int)row["TransactionTypeId"];
+                        var amount = (decimal)row["Amount"];
+
+                        var queueItem = new QueueResultViewModel()
+                        {
+                            QueueId = queueId
+                        };
+
+                        //Call transact process for each type (deposit, withdraw, transfer)
+                        if ((TransactionTypes)transactionTypeId == TransactionTypes.Deposit)
+                        {
+                            var depositResult = await DepositMoney(userWalletAcctNo, amount);
+                            if(depositResult != null)
+                            {
+                                queueItem.Message = depositResult.Message;
+                                queueItem.InfoMessage = depositResult.InfoMessage;
+                            }
+                        }
+                        else if((TransactionTypes)transactionTypeId == TransactionTypes.Withdraw)
+                        {
+                            var withdrawResult = await WithdrawMoney(userWalletAcctNo, amount);
+                            if (withdrawResult != null)
+                            {
+                                queueItem.Message = withdrawResult.Message;
+                                queueItem.InfoMessage = withdrawResult.InfoMessage;
+                            }
+                        }
+                        else
+                        {
+                            var transferResult = await TransferMoney(userWalletAcctNo, fromToAccountNumber, amount);
+                            if (transferResult != null)
+                            {
+                                queueItem.Message = transferResult.Message;
+                                queueItem.InfoMessage = transferResult.InfoMessage;
+                            }
+                        }
+
+
+
+                        //Call update queue
+                        await UpdateQueue(
+                                       queueId,
+                                       queueItem.IsSuccess ? (int)QueueStatusType.Success : (int)QueueStatusType.Failed,
+                                       queueItem.Message);
+                    }
+                }
+               
+            }
+            catch (Exception ex)
+            {
+                processQueueResultView.Message = ex.Message;
+            }
+            
+           
+            return processQueueResultView;
+        }
+
+        public async Task<UpdateQueueViewModel> UpdateQueue(
+                        long queueId,
+                        int queueStatusId,
+                        string message)
+        {
+            UpdateQueueViewModel updateQueueViewModel = new UpdateQueueViewModel();
+            try
+            {
+
+                await dBService.ExecuteNonQuery("UpdateUserWalletTransactionQueue",
+                       new SqlParameter[]
+                    {
+                        new SqlParameter() { ParameterName = "QueueId", Value = queueId },
+                        new SqlParameter() { ParameterName = "QueueStatusId", Value = queueStatusId},
+                        new SqlParameter() { ParameterName = "Message", Value = message }
+
+                    }, CommandType.StoredProcedure);
+            }
+            catch (Exception ex)
+            {
+                updateQueueViewModel.Message = ex.Message;
+            }
+
+            return updateQueueViewModel;
         }
     }
 }
