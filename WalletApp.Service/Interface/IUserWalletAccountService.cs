@@ -9,6 +9,6 @@ namespace WalletApp.Service.Interface
     public interface IUserWalletAccountService
     {
         Task<RegisterWalletViewModel> RegisterWallet(Guid userSecurityId);
-        Task<QueueResultViewModel> InsertToQueue(Guid userSecurityId);
+       
     }
 }

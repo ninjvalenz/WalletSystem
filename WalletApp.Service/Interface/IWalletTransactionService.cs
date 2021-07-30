@@ -17,6 +17,6 @@ namespace WalletApp.Service.Interface
         Task<TransferMoneyViewModel> TransferMoney(long accountNumber, long toAccountNumber, decimal amount);
 
         Task<WithdrawMoneyViewModel> WithdrawMoney(long accountNumber, decimal amount);
-        Task<QueueResultViewModel> InsertToQueue(long accountNumber, long fromToAccountNumber, decimal amount, int transactionTypeId);
+        Task<QueueResultViewModel> InsertToQueue(long accountNumber, long? fromToAccountNumber, decimal amount, int transactionTypeId);
     }
 }

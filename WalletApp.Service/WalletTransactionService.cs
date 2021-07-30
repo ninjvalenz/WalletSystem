@@ -201,7 +201,7 @@ namespace WalletApp.Service
 
         }
 
-        public async Task<QueueResultViewModel> InsertToQueue(long accountNumber, long fromToAccountNumber, decimal amount, int transactionTypeId)
+        public async Task<QueueResultViewModel> InsertToQueue(long accountNumber, long? fromToAccountNumber, decimal amount, int transactionTypeId)
         {
             QueueResultViewModel queueResultViewModel = new QueueResultViewModel();
             try

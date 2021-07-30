@@ -20,29 +20,6 @@ namespace WalletApp.Service
 
         }
 
-        public async Task<QueueResultViewModel> InsertToQueue(Guid userSecurityId)
-        {
-            QueueResultViewModel queueResultViewModel = new QueueResultViewModel();
-
-            try
-            {
-                var domainResult = await dBService.ExecuteQuery("InsertIntoUserWalletAcctQueue",
-                    new SqlParameter[]
-                    {
-                        new SqlParameter() { ParameterName = "UserSecurityId", Value = userSecurityId }
-                    }, CommandType.StoredProcedure);
-
-                if (domainResult != null && domainResult.Rows != null && domainResult.Rows.Count > 0 && domainResult.Rows[0][0] != DBNull.Value)
-                    queueResultViewModel = domainResult.ToQueueResultViewModel();
-            }
-            catch (Exception ex)
-            {
-                queueResultViewModel.Message = ex.Message;
-            }
-
-            return queueResultViewModel;
-        }
-
         public async Task<RegisterWalletViewModel> RegisterWallet(Guid userSecurityId)
         {
             RegisterWalletViewModel registerWalletViewModel = new RegisterWalletViewModel();

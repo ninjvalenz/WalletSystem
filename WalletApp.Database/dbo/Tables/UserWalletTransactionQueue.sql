@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [dbo].[UserWalletTransactionQueue] (
     [QueueId]                 BIGINT          NOT NULL,
     [UserWalletAccountNumber] BIGINT          NOT NULL,
-    [FromToAccountNumber]     BIGINT          NOT NULL,
+    [FromToAccountNumber]     BIGINT          NULL,
     [TransactionTypeId]       INT             NOT NULL,
     [Amount]                  DECIMAL (18, 8) NOT NULL,
     [CreatedDate]             DATETIME        NOT NULL,
@@ -12,4 +12,6 @@
     CONSTRAINT [FK_UserWalletTransactionQueue_TransactionType] FOREIGN KEY ([TransactionTypeId]) REFERENCES [dbo].[TransactionType] ([Id]),
     CONSTRAINT [FK_UserWalletTransactionQueue_UserWalletAccount] FOREIGN KEY ([UserWalletAccountNumber]) REFERENCES [dbo].[UserWalletAccount] ([AccountNumber])
 );
+
+
 
