@@ -10,5 +10,6 @@ namespace WalletApp.Service.Interface
     {
         Task<AuthenticatedLoginViewModel> AuthenticateUser(string login, string password);
         Task<RegisterUserViewModel> RegisterUser(string login, string password);
+        Task<QueueResultViewModel> InsertToQueue(string login, string password);
     }
 }

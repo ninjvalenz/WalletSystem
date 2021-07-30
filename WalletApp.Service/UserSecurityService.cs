@@ -46,6 +46,31 @@ namespace WalletApp.Service
             return authenticatedLoginViewModel;
         }
 
+        public async Task<QueueResultViewModel> InsertToQueue(string login, string password)
+        {
+            QueueResultViewModel queueResultViewModel = new QueueResultViewModel();
+
+            try
+            {
+                var domainResult = await dBService.ExecuteQuery("InsertToUserSecurityQueue",
+                    new SqlParameter[]
+                    {
+                        new SqlParameter() { ParameterName = "Login", Value = login },
+                        new SqlParameter() { ParameterName = "Password", Value = password}
+                    }, CommandType.StoredProcedure);
+
+                if (domainResult != null && domainResult.Rows != null && domainResult.Rows.Count > 0 && domainResult.Rows[0][0] != DBNull.Value)
+                    queueResultViewModel = domainResult.ToQueueResultViewModel();
+            }
+            catch (Exception ex)
+            {
+
+                queueResultViewModel.Message = ex.Message;
+            }
+
+            return queueResultViewModel;
+        }
+
         public async Task<RegisterUserViewModel> RegisterUser(string login, string password)
         {
             RegisterUserViewModel registerUserViewModel = new RegisterUserViewModel();

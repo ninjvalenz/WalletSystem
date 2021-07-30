@@ -200,5 +200,31 @@ namespace WalletApp.Service
             return transferMoneyViewModel;
 
         }
+
+        public async Task<QueueResultViewModel> InsertToQueue(long accountNumber, long fromToAccountNumber, decimal amount, int transactionTypeId)
+        {
+            QueueResultViewModel queueResultViewModel = new QueueResultViewModel();
+            try
+            {
+                var domainResult = await dBService.ExecuteQuery("InsertIntoUserWalletTransacQueue",
+                    new SqlParameter[]
+                    {
+                        new SqlParameter() { ParameterName = "UserWalletAccountNumber", Value = accountNumber },
+                        new SqlParameter() { ParameterName = "FromToAccountNumber", Value = fromToAccountNumber },
+                        new SqlParameter() { ParameterName = "TransactionTypeId", Value = transactionTypeId },
+                        new SqlParameter() { ParameterName = "Amount", Value = amount }
+                    }, CommandType.StoredProcedure);
+
+                if (domainResult != null && domainResult.Rows != null && domainResult.Rows.Count > 0 && domainResult.Rows[0][0] != DBNull.Value)
+                    queueResultViewModel = domainResult.ToQueueResultViewModel();
+            }
+            catch (Exception ex)
+            {
+
+                queueResultViewModel.Message = ex.Message;
+            }
+
+            return queueResultViewModel;
+        }
     }
 }
