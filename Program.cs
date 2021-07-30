@@ -23,8 +23,14 @@ namespace WalletApp
         {
 
             ConfigureDependecyInjection();
-           
-            Console.WriteLine("Hello World!");
+
+            do
+            {
+                var userProcessResult = await userSecurityService.ProcessQueue();
+            }
+            while (true);
+            
+            
             
         }
 

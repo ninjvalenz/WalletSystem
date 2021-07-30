@@ -88,27 +88,36 @@ namespace WalletApp.Api.Controllers
                 if (model == null || string.IsNullOrEmpty(model.Login) || string.IsNullOrEmpty(model.Password))
                     throw new RequiredFieldsException();
 
-                //Register user 
-                var userResult = await userSecurityService.RegisterUser(model.Login, model.Password);
-                if (userResult != null)
+                ////Register user 
+                //var userResult = await userSecurityService.RegisterUser(model.Login, model.Password);
+                //if (userResult != null)
+                //{
+                //    if (userResult.IsSuccess)
+                //    {
+                //        //Register initial wallet account
+                //        var walletResult = await userWalletAccountService.RegisterWallet(userResult.UserSecurityID);
+                //        if(walletResult != null)
+                //        {
+                //            if (walletResult.IsSuccess)
+                //                return Ok(walletResult);
+
+                //            throw new Exception(walletResult.Message);
+                //        }
+                //    }
+
+                //    throw new Exception(userResult.Message);
+
+                //}
+
+
+                var userResult = await userSecurityService.InsertToQueue(model.Login, model.Password);
+                if(userResult != null)
                 {
                     if (userResult.IsSuccess)
-                    {
-                        //Register initial wallet account
-                        var walletResult = await userWalletAccountService.RegisterWallet(userResult.UserSecurityID);
-                        if(walletResult != null)
-                        {
-                            if (walletResult.IsSuccess)
-                                return Ok(walletResult);
-
-                            throw new Exception(walletResult.Message);
-                        }
-                    }
-
-                    throw new Exception(userResult.Message);
-
+                        return Ok(userResult);
+                    else throw new Exception(userResult.Message);
                 }
-
+                
                 //if everything fails...
                 throw new ServerProblemException();
 
