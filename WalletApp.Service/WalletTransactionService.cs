@@ -186,26 +186,26 @@ namespace WalletApp.Service
                     domainResult.Rows != null &&
                     domainResult.Rows.Count > 0)
                 {
+                    if (!(bool)domainResult.Rows[0]["IsExisting"])
+                        throw new AccountNotExistingException();
+
                     if (!(bool)domainResult.Rows[0]["IsSuccess"])
                         throw new InsufficientWalletBalanceException();
-                    else
-                    {
-                        var endBal = domainResult.Rows[0]["EndBalance"] != null ?
+                  
+                    var endBal = domainResult.Rows[0]["EndBalance"] != null ?
                             (decimal)domainResult.Rows[0]["EndBalance"] : 0;
 
-                        transferMoneyViewModel.InfoMessage = $"Success! End balance is now {endBal}";
+                    transferMoneyViewModel.InfoMessage = $"Success! End balance is now {endBal}";
 
-                        //Proceed to tranfer to destination
-                        var depositResult = await DepositMoney(fromToAccountNumber, accountNumber, amount, (int)TransactionTypes.Deposit);
+                    //Proceed to tranfer to destination
+                    var depositResult = await DepositMoney(fromToAccountNumber, accountNumber, amount, (int)TransactionTypes.Deposit);
 
-                        //Refund if not success
-                        if (depositResult != null &&
-                            !depositResult.IsSuccess)
-                        {
-                            await DepositMoney(accountNumber, null, amount, (int)TransactionTypes.Refund);
-                            throw new Exception(depositResult.Message);
-                        }
-
+                    //Refund if not success
+                    if (depositResult != null &&
+                        !depositResult.IsSuccess)
+                    {
+                        await DepositMoney(accountNumber, null, amount, (int)TransactionTypes.Refund);
+                        throw new Exception(depositResult.Message);
                     }
                 }
 
