@@ -104,6 +104,60 @@ namespace WalletApp.Service.Tests
 
         }
 
+        [Test]
+        public void InsertToQueue_Returns_QueueResultViewModel_Success()
+        {
+            var service = GetUserSecurityService();
+            //Arrange
+            dbService.Setup(x => x.ExecuteQuery(It.IsAny<string>(), It.IsAny<SqlParameter[]>(), It.IsAny<CommandType>()).Result).
+                Returns(GenerateInsertToQueueMock());
+
+            //Act
+            var result = service.InsertToQueue("login", "pass").Result;
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.AreEqual(result.IsSuccess, true);
+            Assert.IsNull(result.Message);
+
+        }
+
+        [Test]
+        public void ProcessQueue_Returns_QueueResultViewModel_Success()
+        {
+            var service = GetUserSecurityService();
+            //Arrange
+            dbService.Setup(x => x.ExecuteQuery(It.IsAny<string>(), It.IsAny<SqlParameter[]>(), It.IsAny<CommandType>()).Result).
+                Returns(GenerateProcessQueueMock());
+
+            //Act
+            var result = service.ProcessQueue().Result;
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.AreEqual(result.IsSuccess, true);
+            Assert.IsNull(result.Message);
+
+        }
+
+        [Test]
+        public void UpdateQueue_Returns_QueueResultViewModel_Success()
+        {
+            var service = GetUserSecurityService();
+            //Arrange
+            dbService.Setup(x => x.ExecuteQuery(It.IsAny<string>(), It.IsAny<SqlParameter[]>(), It.IsAny<CommandType>()).Result).
+                Returns(GenerateUpdateQueueMock());
+
+            //Act
+            var result = service.UpdateQueue(It.IsAny<long>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<long>()).Result;
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.AreEqual(result.IsSuccess, true);
+            Assert.IsNull(result.Message);
+
+        }
+
         #region GenerateMockData
         private DataTable GenerateUserSecurityMock()
         {
@@ -124,6 +178,64 @@ namespace WalletApp.Service.Tests
 
             dt.Rows.Add(row1);
             dt.Rows.Add(row2);
+            return dt;
+        }
+
+        private DataTable GenerateInsertToQueueMock()
+        {
+            DataTable dt = new DataTable();
+           
+            dt.Columns.Add(new DataColumn() { ColumnName = "QueueId", DataType = typeof(long) });
+
+            DataRow row1 = dt.NewRow();
+            row1["QueueId"] = 111111111111;
+
+            dt.Rows.Add(row1);
+         
+            return dt;
+        }
+
+        private DataTable GenerateProcessQueueMock()
+        {
+            DataTable dt = new DataTable();
+            dt.Columns.Add(new DataColumn() { ColumnName = "Password", DataType = typeof(string) });
+            dt.Columns.Add(new DataColumn() { ColumnName = "Login", DataType = typeof(string) });
+            dt.Columns.Add(new DataColumn() { ColumnName = "queueId", DataType = typeof(long) });
+
+            DataRow row1 = dt.NewRow();
+            row1["queueId"] = 111111111111;
+            row1["Login"] = "jvalezona";
+            row1["Password"] = "jvalenzona";
+
+            DataRow row2 = dt.NewRow();
+            row2["queueId"] = 111111111112;
+            row2["Login"] = "jvalezona";
+            row2["Password"] = "jvalenzona";
+
+            dt.Rows.Add(row1);
+            dt.Rows.Add(row2);
+            return dt;
+        }
+
+        private DataTable GenerateUpdateQueueMock()
+        {
+            DataTable dt = new DataTable();
+
+            dt.Columns.Add(new DataColumn() { ColumnName = "QueueId", DataType = typeof(long) });
+            dt.Columns.Add(new DataColumn() { ColumnName = "QueueStatusId", DataType = typeof(int) });
+            dt.Columns.Add(new DataColumn() { ColumnName = "Message", DataType = typeof(string) });
+            dt.Columns.Add(new DataColumn() { ColumnName = "RegisteredUserId", DataType = typeof(Guid) });
+            dt.Columns.Add(new DataColumn() { ColumnName = "RegisteredWalletAcctNo", DataType = typeof(long) });
+
+            DataRow row1 = dt.NewRow();
+            row1["QueueId"] = 12345;
+            row1["QueueStatusId"] = 1;
+            row1["Message"] = "test";
+            row1["RegisteredUserId"] = Guid.NewGuid();
+            row1["RegisteredWalletAcctNo"] = 111111111111;
+
+            dt.Rows.Add(row1);
+
             return dt;
         }
 

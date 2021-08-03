@@ -127,39 +127,39 @@ namespace WalletApp.Service.Tests
 
         }
 
-        [Test]
-        public void DepositMoney_Returns_DepositMoneyViewModel_NotSuccess_TooLowAmountException()
-        {
-            var service = GetWalletTransactionService();
-            //Arrange
-            dbService.Setup(x => x.ExecuteNonQuery(It.IsAny<string>(), It.IsAny<SqlParameter[]>(), It.IsAny<CommandType>()));
+        //[Test]
+        //public void DepositMoney_Returns_DepositMoneyViewModel_NotSuccess_TooLowAmountException()
+        //{
+        //    var service = GetWalletTransactionService();
+        //    //Arrange
+        //    dbService.Setup(x => x.ExecuteNonQuery(It.IsAny<string>(), It.IsAny<SqlParameter[]>(), It.IsAny<CommandType>()));
 
-            //Act
-            var result = service.DepositMoney(It.IsAny<long>(), null, -100, (int)TransactionTypes.Deposit).Result;
+        //    //Act
+        //    var result = service.DepositMoney(It.IsAny<long>(), null, -100, (int)TransactionTypes.Deposit).Result;
 
-            //Assert
-            Assert.NotNull(result);
-            Assert.AreEqual(result.IsSuccess, false);
-            Assert.AreEqual(result.Message, new TooLowAmountException().Message);
+        //    //Assert
+        //    Assert.NotNull(result);
+        //    Assert.AreEqual(result.IsSuccess, false);
+        //    Assert.AreEqual(result.Message, new TooLowAmountException().Message);
 
-        }
+        //}
 
-        [Test]
-        public void DepositMoney_Returns_DepositMoneyViewModel_NotSuccess_MaxAmountException()
-        {
-            var service = GetWalletTransactionService();
-            //Arrange
-            dbService.Setup(x => x.ExecuteNonQuery(It.IsAny<string>(), It.IsAny<SqlParameter[]>(), It.IsAny<CommandType>()));
+       // [Test]
+        //public void DepositMoney_Returns_DepositMoneyViewModel_NotSuccess_MaxAmountException()
+        //{
+        //    var service = GetWalletTransactionService();
+        //    //Arrange
+        //    dbService.Setup(x => x.ExecuteNonQuery(It.IsAny<string>(), It.IsAny<SqlParameter[]>(), It.IsAny<CommandType>()));
 
-            //Act
-            var result = service.DepositMoney(It.IsAny<long>(), null, 999999999999, (int)TransactionTypes.Deposit).Result;
+        //    //Act
+        //    var result = service.DepositMoney(It.IsAny<long>(), null, 999999999999, (int)TransactionTypes.Deposit).Result;
 
-            //Assert
-            Assert.NotNull(result);
-            Assert.AreEqual(result.IsSuccess, false);
-            Assert.AreEqual(result.Message, new MaximumAllowableAmountException().Message);
+        //    //Assert
+        //    Assert.NotNull(result);
+        //    Assert.AreEqual(result.IsSuccess, false);
+        //    Assert.AreEqual(result.Message, new MaximumAllowableAmountException().Message);
 
-        }
+        //}
 
         #endregion
 
@@ -183,40 +183,40 @@ namespace WalletApp.Service.Tests
             Assert.IsNotNull(result.InfoMessage);
 
         }
-        [Test]
-        public void WithdrawMoney_Returns_WithdrawMoneyViewModel_NotSuccess_TooLowAmountException()
-        {
-            var service = GetWalletTransactionService();
-            //Arrange
-            dbService.Setup(x => x.ExecuteQuery(It.IsAny<string>(), It.IsAny<SqlParameter[]>(), It.IsAny<CommandType>()).Result)
-                .Returns(GenerateNotSuccessCredit());
+        //[Test]
+        //public void WithdrawMoney_Returns_WithdrawMoneyViewModel_NotSuccess_TooLowAmountException()
+        //{
+        //    var service = GetWalletTransactionService();
+        //    //Arrange
+        //    dbService.Setup(x => x.ExecuteQuery(It.IsAny<string>(), It.IsAny<SqlParameter[]>(), It.IsAny<CommandType>()).Result)
+        //        .Returns(GenerateNotSuccessCredit());
 
-            //Act
-            var result = service.WithdrawMoney(It.IsAny<long>(), -100).Result;
+        //    //Act
+        //    var result = service.WithdrawMoney(It.IsAny<long>(), -100).Result;
 
-            //Assert
-            Assert.NotNull(result);
-            Assert.AreEqual(result.IsSuccess, false);
-            Assert.AreEqual(result.Message, new TooLowAmountException().Message);
+        //    //Assert
+        //    Assert.NotNull(result);
+        //    Assert.AreEqual(result.IsSuccess, false);
+        //    Assert.AreEqual(result.Message, new TooLowAmountException().Message);
 
-        }
-        [Test]
-        public void WithdrawMoney_Returns_WithdrawMoneyViewModel_NotSuccess_MaxAmountException()
-        {
-            var service = GetWalletTransactionService();
-            //Arrange
-            dbService.Setup(x => x.ExecuteQuery(It.IsAny<string>(), It.IsAny<SqlParameter[]>(), It.IsAny<CommandType>()).Result)
-                .Returns(GenerateNotSuccessCredit());
+        //}
+        //[Test]
+        //public void WithdrawMoney_Returns_WithdrawMoneyViewModel_NotSuccess_MaxAmountException()
+        //{
+        //    var service = GetWalletTransactionService();
+        //    //Arrange
+        //    dbService.Setup(x => x.ExecuteQuery(It.IsAny<string>(), It.IsAny<SqlParameter[]>(), It.IsAny<CommandType>()).Result)
+        //        .Returns(GenerateNotSuccessCredit());
 
-            //Act
-            var result = service.WithdrawMoney(It.IsAny<long>(), 999999999999).Result;
+        //    //Act
+        //    var result = service.WithdrawMoney(It.IsAny<long>(), 999999999999).Result;
 
-            //Assert
-            Assert.NotNull(result);
-            Assert.AreEqual(result.IsSuccess, false);
-            Assert.AreEqual(result.Message, new MaximumAllowableAmountException().Message);
+        //    //Assert
+        //    Assert.NotNull(result);
+        //    Assert.AreEqual(result.IsSuccess, false);
+        //    Assert.AreEqual(result.Message, new MaximumAllowableAmountException().Message);
 
-        }
+        //}
         [Test]
         public void WithdrawMoney_Returns_WithdrawMoneyViewModel_NotSuccess_InsufficientBalException()
         {
@@ -257,40 +257,40 @@ namespace WalletApp.Service.Tests
             Assert.IsNotNull(result.InfoMessage);
 
         }
-        [Test]
-        public void TransferMoney_Returns_TransferMoneyViewModel_NotSuccess_TooLowAmountException()
-        {
-            var service = GetWalletTransactionService();
-            //Arrange
-            dbService.Setup(x => x.ExecuteQuery(It.IsAny<string>(), It.IsAny<SqlParameter[]>(), It.IsAny<CommandType>()).Result)
-                .Returns(GenerateNotSuccessCredit());
+        //[Test]
+        //public void TransferMoney_Returns_TransferMoneyViewModel_NotSuccess_TooLowAmountException()
+        //{
+        //    var service = GetWalletTransactionService();
+        //    //Arrange
+        //    dbService.Setup(x => x.ExecuteQuery(It.IsAny<string>(), It.IsAny<SqlParameter[]>(), It.IsAny<CommandType>()).Result)
+        //        .Returns(GenerateNotSuccessCredit());
 
-            //Act
-            var result = service.TransferMoney(It.IsAny<long>(), It.IsAny<long>() , - 100).Result;
+        //    //Act
+        //    var result = service.TransferMoney(It.IsAny<long>(), It.IsAny<long>() , - 100).Result;
 
-            //Assert
-            Assert.NotNull(result);
-            Assert.AreEqual(result.IsSuccess, false);
-            Assert.AreEqual(result.Message, new TooLowAmountException().Message);
+        //    //Assert
+        //    Assert.NotNull(result);
+        //    Assert.AreEqual(result.IsSuccess, false);
+        //    Assert.AreEqual(result.Message, new TooLowAmountException().Message);
 
-        }
-        [Test]
-        public void TransferMoney_Returns_TransferMoneyViewModel_NotSuccess_MaxAmountException()
-        {
-            var service = GetWalletTransactionService();
-            //Arrange
-            dbService.Setup(x => x.ExecuteQuery(It.IsAny<string>(), It.IsAny<SqlParameter[]>(), It.IsAny<CommandType>()).Result)
-                .Returns(GenerateNotSuccessCredit());
+        //}
+        //[Test]
+        //public void TransferMoney_Returns_TransferMoneyViewModel_NotSuccess_MaxAmountException()
+        //{
+        //    var service = GetWalletTransactionService();
+        //    //Arrange
+        //    dbService.Setup(x => x.ExecuteQuery(It.IsAny<string>(), It.IsAny<SqlParameter[]>(), It.IsAny<CommandType>()).Result)
+        //        .Returns(GenerateNotSuccessCredit());
 
-            //Act
-            var result = service.TransferMoney(It.IsAny<long>(), It.IsAny<long>(), 999999999999).Result;
+        //    //Act
+        //    var result = service.TransferMoney(It.IsAny<long>(), It.IsAny<long>(), 999999999999).Result;
 
-            //Assert
-            Assert.NotNull(result);
-            Assert.AreEqual(result.IsSuccess, false);
-            Assert.AreEqual(result.Message, new MaximumAllowableAmountException().Message);
+        //    //Assert
+        //    Assert.NotNull(result);
+        //    Assert.AreEqual(result.IsSuccess, false);
+        //    Assert.AreEqual(result.Message, new MaximumAllowableAmountException().Message);
 
-        }
+        //}
         [Test]
         public void TransferMoney_Returns_TransferMoneyViewModel_NotSuccess_InsufficientBalException()
         {
