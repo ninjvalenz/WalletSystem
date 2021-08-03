@@ -9,6 +9,8 @@ using WalletApp.Model.Enums;
 using WalletApp.Service;
 using WalletApp.Service.ConnectionStrings;
 using WalletApp.Service.Interface;
+using System.Web;
+using System.Threading;
 
 namespace WalletApp
 {
@@ -23,10 +25,42 @@ namespace WalletApp
         {
 
             ConfigureDependecyInjection();
-           
-            Console.WriteLine("Hello World!");
-            
+
+          
+
+            Thread processUserRegistration = new Thread(new ThreadStart(UserRegistrations));
+            Thread processMoneyTransaction = new Thread(new ThreadStart(MoneyTransactions));
+
+            processUserRegistration.Start();
+            processMoneyTransaction.Start();
+
         }
+
+        private static void UserRegistrations()
+        {
+            do
+            {
+                Console.WriteLine("Processing UserRegistrations...");
+                var userProcessResult = userSecurityService.ProcessQueue().Result;
+                if (userProcessResult != null)
+                    Console.WriteLine($"Done processing -- Error Msg: {userProcessResult.Message}; Processed: {userProcessResult.QueueResultViewModels.Count}");
+            }
+            while (true);
+        }
+
+        private static void MoneyTransactions()
+        {
+           
+            do
+            {
+                Console.WriteLine("Processing MoneyTransactions...");
+                var walletTransactionResult = walletTransactionService.ProcessQueue().Result;
+                if (walletTransactionResult != null)
+                    Console.WriteLine($"Done processing -- Error Msg: {walletTransactionResult.Message}; Processed: {walletTransactionResult.QueueResultViewModels.Count}");
+            }
+            while (true);
+        }
+
 
         private static void ConfigureDependecyInjection()
         {

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using WalletApp.Api.Controllers;
+using WalletApp.Model.Enums;
 using WalletApp.Model.ViewModel;
 using WalletApp.Model.ViewModel.Exceptions;
 using WalletApp.Service.Interface;
@@ -31,14 +32,14 @@ namespace WalletApp.Controller.Tests
             var controller = GetWalletController();
 
             //Arrange
-            dbWalletTransactionService.Setup(x => x.DepositMoney(It.IsAny<long>(), -1).Result)
-               .Returns(GenerateDepositMoneyViewModel_TooLowAmountException());
+            dbWalletTransactionService.Setup(x => x.InsertToQueue(It.IsAny<long>(), null, -1, (int)TransactionTypes.Deposit).Result)
+               .Returns(GenerateQueueResultViewModel_TooLowAmountException());
 
             //Act
-            var result = controller.Deposit(new Model.ViewModel.RequestBodyModel.TransactionViewModel() 
-            { 
-                AccountNumber = 111111111111, 
-                Amount = -1 
+            var result = controller.Deposit(new Model.ViewModel.RequestBodyModel.TransactionViewModel()
+            {
+                AccountNumber = 111111111111,
+                Amount = -1
             }).Result;
 
             //Assert
@@ -54,8 +55,8 @@ namespace WalletApp.Controller.Tests
             var controller = GetWalletController();
 
             //Arrange
-            dbWalletTransactionService.Setup(x => x.DepositMoney(It.IsAny<long>(), 999999999999).Result)
-                .Returns(GenerateDepositMoneyViewModel_MaximumAllowableAmountException());
+            dbWalletTransactionService.Setup(x => x.InsertToQueue(It.IsAny<long>(), null, 999999999999, (int)TransactionTypes.Deposit).Result)
+                .Returns(GenerateQueueResultViewModel_MaximumAllowableAmountException());
 
             //Act
             var result = controller.Deposit(new Model.ViewModel.RequestBodyModel.TransactionViewModel()
@@ -77,8 +78,8 @@ namespace WalletApp.Controller.Tests
             var controller = GetWalletController();
 
             //Arrange
-            dbWalletTransactionService.Setup(x => x.DepositMoney(It.IsAny<long>(), -1).Result)
-                .Returns(new DepositMoneyViewModel());
+            dbWalletTransactionService.Setup(x => x.InsertToQueue(It.IsAny<long>(), null, -1, (int)TransactionTypes.Deposit).Result)
+                .Returns(new QueueResultViewModel() { Message = "" });
 
             //Act
             var result = controller.Deposit(new Model.ViewModel.RequestBodyModel.TransactionViewModel(){}).Result;
@@ -96,8 +97,8 @@ namespace WalletApp.Controller.Tests
             var controller = GetWalletController();
 
             //Arrange
-            dbWalletTransactionService.Setup(x => x.DepositMoney(It.IsAny<long>(), 100).Result)
-                .Returns(new DepositMoneyViewModel() { InfoMessage = "Success"});
+            dbWalletTransactionService.Setup(x => x.InsertToQueue(It.IsAny<long>(), null, 100, (int)TransactionTypes.Deposit).Result)
+                .Returns(new QueueResultViewModel() { Message = null });
 
             //Act
             var result = controller.Deposit(new Model.ViewModel.RequestBodyModel.TransactionViewModel() 
@@ -109,8 +110,7 @@ namespace WalletApp.Controller.Tests
             //Assert
             Assert.NotNull(result);
             Assert.IsInstanceOf<IActionResult>(result);
-            Assert.AreEqual(((ObjectResult)result).Value.GetType(), typeof(DepositMoneyViewModel));
-            Assert.IsNotNull(((MethodResult)((ObjectResult)result).Value).InfoMessage);
+            Assert.AreEqual(((ObjectResult)result).Value.GetType(), typeof(QueueResultViewModel));
             Assert.IsNull(((MethodResult)((ObjectResult)result).Value).Message);
 
         }
@@ -125,8 +125,9 @@ namespace WalletApp.Controller.Tests
             var controller = GetWalletController();
 
             //Arrange
-            dbWalletTransactionService.Setup(x => x.WithdrawMoney(It.IsAny<long>(), -1).Result)
-               .Returns(GenerateWithdrawMoneyViewModel_TooLowAmountException());
+            dbWalletTransactionService.Setup(x => x.InsertToQueue(It.IsAny<long>(), null, -1, (int)TransactionTypes.Withdraw).Result)
+               .Returns(GenerateQueueResultViewModel_TooLowAmountException());
+
 
             //Act
             var result = controller.Withdraw(new Model.ViewModel.RequestBodyModel.TransactionViewModel()
@@ -148,8 +149,8 @@ namespace WalletApp.Controller.Tests
             var controller = GetWalletController();
 
             //Arrange
-            dbWalletTransactionService.Setup(x => x.WithdrawMoney(It.IsAny<long>(), 999999999999).Result)
-                .Returns(GenerateWithdrawMoneyViewModel_MaximumAllowableAmountException());
+            dbWalletTransactionService.Setup(x => x.InsertToQueue(It.IsAny<long>(), null, 999999999999, (int)TransactionTypes.Withdraw).Result)
+                .Returns(GenerateQueueResultViewModel_MaximumAllowableAmountException());
 
             //Act
             var result = controller.Withdraw(new Model.ViewModel.RequestBodyModel.TransactionViewModel()
@@ -171,8 +172,8 @@ namespace WalletApp.Controller.Tests
             var controller = GetWalletController();
 
             //Arrange
-            dbWalletTransactionService.Setup(x => x.WithdrawMoney(It.IsAny<long>(), 100).Result)
-                .Returns(GenerateWithdrawMoneyViewModel_InsufficientWalletBalanceException());
+            dbWalletTransactionService.Setup(x => x.InsertToQueue(It.IsAny<long>(), null, 100, (int)TransactionTypes.Withdraw).Result)
+                 .Returns(GenerateQueueResultViewModel_InsufficientWalletBalanceException());
 
             //Act
             var result = controller.Withdraw(new Model.ViewModel.RequestBodyModel.TransactionViewModel()
@@ -194,8 +195,8 @@ namespace WalletApp.Controller.Tests
             var controller = GetWalletController();
 
             //Arrange
-            dbWalletTransactionService.Setup(x => x.WithdrawMoney(It.IsAny<long>(), -1).Result)
-                .Returns(new WithdrawMoneyViewModel());
+            dbWalletTransactionService.Setup(x => x.InsertToQueue(It.IsAny<long>(), null, -1, (int)TransactionTypes.Withdraw).Result)
+                 .Returns(new QueueResultViewModel() { Message = "" });
 
             //Act
             var result = controller.Withdraw(new Model.ViewModel.RequestBodyModel.TransactionViewModel() { }).Result;
@@ -213,8 +214,8 @@ namespace WalletApp.Controller.Tests
             var controller = GetWalletController();
 
             //Arrange
-            dbWalletTransactionService.Setup(x => x.WithdrawMoney(It.IsAny<long>(), 100).Result)
-                .Returns(new WithdrawMoneyViewModel() { InfoMessage = "Success" });
+            dbWalletTransactionService.Setup(x => x.InsertToQueue(It.IsAny<long>(), null, 100, (int)TransactionTypes.Withdraw).Result)
+                .Returns(new QueueResultViewModel() { Message = null });
 
             //Act
             var result = controller.Withdraw(new Model.ViewModel.RequestBodyModel.TransactionViewModel()
@@ -226,8 +227,7 @@ namespace WalletApp.Controller.Tests
             //Assert
             Assert.NotNull(result);
             Assert.IsInstanceOf<IActionResult>(result);
-            Assert.AreEqual(((ObjectResult)result).Value.GetType(), typeof(WithdrawMoneyViewModel));
-            Assert.IsNotNull(((MethodResult)((ObjectResult)result).Value).InfoMessage);
+            Assert.AreEqual(((ObjectResult)result).Value.GetType(), typeof(QueueResultViewModel));
             Assert.IsNull(((MethodResult)((ObjectResult)result).Value).Message);
 
         }
@@ -242,8 +242,9 @@ namespace WalletApp.Controller.Tests
             var controller = GetWalletController();
 
             //Arrange
-            dbWalletTransactionService.Setup(x => x.TransferMoney(It.IsAny<long>(), It.IsAny<long>(), -1).Result)
-               .Returns(GenerateTransferMoneyViewModel_TooLowAmountException());
+            dbWalletTransactionService.Setup(x => x.InsertToQueue(It.IsAny<long>(), It.IsAny<long>(), -1, (int)TransactionTypes.Transfer).Result)
+              .Returns(GenerateQueueResultViewModel_TooLowAmountException());
+
 
             //Act
             var result = controller.Transfer(new Model.ViewModel.RequestBodyModel.NewTransferViewModel()
@@ -266,8 +267,9 @@ namespace WalletApp.Controller.Tests
             var controller = GetWalletController();
 
             //Arrange
-            dbWalletTransactionService.Setup(x => x.TransferMoney(It.IsAny<long>(), It.IsAny<long>(), 999999999999).Result)
-                .Returns(GenerateTransferMoneyViewModel_MaximumAllowableAmountException());
+            dbWalletTransactionService.Setup(x => x.InsertToQueue(It.IsAny<long>(), It.IsAny<long>(), 999999999999, (int)TransactionTypes.Transfer).Result)
+              .Returns(GenerateQueueResultViewModel_MaximumAllowableAmountException());
+
 
             //Act
             var result = controller.Transfer(new Model.ViewModel.RequestBodyModel.NewTransferViewModel()
@@ -290,8 +292,8 @@ namespace WalletApp.Controller.Tests
             var controller = GetWalletController();
 
             //Arrange
-            dbWalletTransactionService.Setup(x => x.TransferMoney(It.IsAny<long>(), It.IsAny<long>(), 100).Result)
-                .Returns(GenerateTransferMoneyViewModel_InsufficientWalletBalanceException());
+            dbWalletTransactionService.Setup(x => x.InsertToQueue(It.IsAny<long>(), It.IsAny<long>(), 100, (int)TransactionTypes.Transfer).Result)
+                .Returns(GenerateQueueResultViewModel_InsufficientWalletBalanceException());
 
             //Act
             var result = controller.Transfer(new Model.ViewModel.RequestBodyModel.NewTransferViewModel()
@@ -314,8 +316,8 @@ namespace WalletApp.Controller.Tests
             var controller = GetWalletController();
 
             //Arrange
-            dbWalletTransactionService.Setup(x => x.TransferMoney(It.IsAny<long>(), It.IsAny<long>(), -1).Result)
-                .Returns(new TransferMoneyViewModel());
+            dbWalletTransactionService.Setup(x => x.InsertToQueue(It.IsAny<long>(), It.IsAny<long>(), -1, (int)TransactionTypes.Transfer).Result)
+               .Returns(new QueueResultViewModel());
 
             //Act
             var result = controller.Transfer(new Model.ViewModel.RequestBodyModel.NewTransferViewModel() { }).Result;
@@ -333,8 +335,8 @@ namespace WalletApp.Controller.Tests
             var controller = GetWalletController();
 
             //Arrange
-            dbWalletTransactionService.Setup(x => x.TransferMoney(It.IsAny<long>(), It.IsAny<long>(), 100).Result)
-                .Returns(new TransferMoneyViewModel() { InfoMessage = "Success" });
+            dbWalletTransactionService.Setup(x => x.InsertToQueue(It.IsAny<long>(), It.IsAny<long>(), 100, (int)TransactionTypes.Transfer).Result)
+                .Returns(new QueueResultViewModel() { Message = null });
 
             //Act
             var result = controller.Transfer(new Model.ViewModel.RequestBodyModel.NewTransferViewModel()
@@ -347,8 +349,7 @@ namespace WalletApp.Controller.Tests
             //Assert
             Assert.NotNull(result);
             Assert.IsInstanceOf<IActionResult>(result);
-            Assert.AreEqual(((ObjectResult)result).Value.GetType(), typeof(TransferMoneyViewModel));
-            Assert.IsNotNull(((MethodResult)((ObjectResult)result).Value).InfoMessage);
+            Assert.AreEqual(((ObjectResult)result).Value.GetType(), typeof(QueueResultViewModel));
             Assert.IsNull(((MethodResult)((ObjectResult)result).Value).Message);
 
         }
@@ -512,69 +513,33 @@ namespace WalletApp.Controller.Tests
 
         }
 
-        private DepositMoneyViewModel GenerateDepositMoneyViewModel_TooLowAmountException()
+        private QueueResultViewModel GenerateQueueResultViewModel_TooLowAmountException()
         {
-            return new DepositMoneyViewModel()
+            return new QueueResultViewModel()
             {
                 Message = new TooLowAmountException().Message
             };
         }
 
-        private DepositMoneyViewModel GenerateDepositMoneyViewModel_MaximumAllowableAmountException()
+        private QueueResultViewModel GenerateQueueResultViewModel_MaximumAllowableAmountException()
         {
-            return new DepositMoneyViewModel()
+            return new QueueResultViewModel()
             {
                 Message = new MaximumAllowableAmountException().Message
             };
         }
 
-        private WithdrawMoneyViewModel GenerateWithdrawMoneyViewModel_TooLowAmountException()
+  
+        private QueueResultViewModel GenerateQueueResultViewModel_InsufficientWalletBalanceException()
         {
-            return new WithdrawMoneyViewModel()
-            {
-                Message = new TooLowAmountException().Message
-            };
-        }
-
-        private WithdrawMoneyViewModel GenerateWithdrawMoneyViewModel_MaximumAllowableAmountException()
-        {
-            return new WithdrawMoneyViewModel()
-            {
-                Message = new MaximumAllowableAmountException().Message
-            };
-        }
-
-        private WithdrawMoneyViewModel GenerateWithdrawMoneyViewModel_InsufficientWalletBalanceException()
-        {
-            return new WithdrawMoneyViewModel()
+            return new QueueResultViewModel()
             {
                 Message = new InsufficientWalletBalanceException().Message
             };
         }
 
-        private TransferMoneyViewModel GenerateTransferMoneyViewModel_TooLowAmountException()
-        {
-            return new TransferMoneyViewModel()
-            {
-                Message = new TooLowAmountException().Message
-            };
-        }
+      
 
-        private TransferMoneyViewModel GenerateTransferMoneyViewModel_MaximumAllowableAmountException()
-        {
-            return new TransferMoneyViewModel()
-            {
-                Message = new MaximumAllowableAmountException().Message
-            };
-        }
-
-        private TransferMoneyViewModel GenerateTransferMoneyViewModel_InsufficientWalletBalanceException()
-        {
-            return new TransferMoneyViewModel()
-            {
-                Message = new InsufficientWalletBalanceException().Message
-            };
-        }
 
 
     }

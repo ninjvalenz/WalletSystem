@@ -78,5 +78,15 @@
     <None Include="dbo\Initializations\01_Tables-schema.sql" />
     <None Include="dbo\Initializations\02_SP.sql" />
     <None Include="dbo\Initializations\03_InitializationData.sql" />
+    <Build Include="dbo\Tables\UserWalletTransactionQueue.sql" />
+    <Build Include="dbo\Tables\UserSecurityQueue.sql" />
+    <Build Include="dbo\Tables\QueueStatusType.sql" />
+    <Build Include="dbo\Stored Procedures\UpdateUserSecurityQueue.sql" />
+    <Build Include="dbo\Stored Procedures\ProcessUserWalletTransacQueue.sql" />
+    <Build Include="dbo\Stored Procedures\ProcessUserSecurityQueue.sql" />
+    <Build Include="dbo\Stored Procedures\InsertToUserSecurityQueue.sql" />
+    <Build Include="dbo\Stored Procedures\InsertIntoUserWalletTransacQueue.sql" />
+    <Build Include="dbo\Stored Procedures\UpdateUserWalletTransactionQueue.sql" />
+    <Build Include="dbo\Stored Procedures\Transfer_Deduct.sql" />
   </ItemGroup>
 </Project>

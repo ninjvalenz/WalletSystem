@@ -66,6 +66,12 @@ namespace WalletApp.Service.Helper
                UserSecurityID = userdomain.Rows[0]["UserSecurityID"] != null ? (Guid)userdomain.Rows[0]["UserSecurityID"] : Guid.Empty
            };
 
+        public static QueueResultViewModel ToQueueResultViewModel(this DataTable queueDomain)
+         => new QueueResultViewModel()
+         {
+             QueueId = queueDomain.Rows[0]["QueueId"] != null ? (long)queueDomain.Rows[0]["QueueId"] : 0
+         };
+
         public static RegisterWalletViewModel ToRegisterWalletViewModel(this DataTable walletdomain)
         => new RegisterWalletViewModel()
         {

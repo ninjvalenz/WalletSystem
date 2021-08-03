@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WalletApp.Model.Enums;
 using WalletApp.Model.ViewModel.Exceptions;
 using WalletApp.Model.ViewModel.RequestBodyModel;
 using WalletApp.Service.Interface;
@@ -31,7 +32,12 @@ namespace WalletApp.Api.Controllers
                 if (model == null || !model.AccountNumber.HasValue || !model.Amount.HasValue)
                     throw new RequiredFieldsException();
 
-                var result = await walletTransactionService.DepositMoney(model.AccountNumber.Value, model.Amount.Value);
+                var result = await walletTransactionService.InsertToQueue(
+                    model.AccountNumber.Value,
+                    null,
+                    model.Amount.Value,
+                    (int)TransactionTypes.Deposit);
+                
                 if (result != null)
                 {
                     if (result.IsSuccess)
@@ -57,7 +63,13 @@ namespace WalletApp.Api.Controllers
                 if (model == null || !model.AccountNumber.HasValue || !model.Amount.HasValue)
                     throw new RequiredFieldsException();
 
-                var result = await walletTransactionService.WithdrawMoney(model.AccountNumber.Value, model.Amount.Value);
+                //var result = await walletTransactionService.WithdrawMoney(model.AccountNumber.Value, model.Amount.Value);
+                var result = await walletTransactionService.InsertToQueue(
+                  model.AccountNumber.Value,
+                  null,
+                  model.Amount.Value,
+                  (int)TransactionTypes.Withdraw);
+
                 if (result != null)
                 {
                     if (result.IsSuccess)
@@ -86,7 +98,13 @@ namespace WalletApp.Api.Controllers
                     !model.Amount.HasValue)
                     throw new RequiredFieldsException();
 
-                var result = await walletTransactionService.TransferMoney(model.AccountNumber.Value, model.ToAccountNumber.Value, model.Amount.Value);
+                //var result = await walletTransactionService.TransferMoney(model.AccountNumber.Value, model.ToAccountNumber.Value, model.Amount.Value);
+                var result = await walletTransactionService.InsertToQueue(
+                  model.AccountNumber.Value,
+                  model.ToAccountNumber.Value,
+                  model.Amount.Value,
+                  (int)TransactionTypes.Transfer);
+
                 if (result != null)
                 {
                     if (result.IsSuccess)

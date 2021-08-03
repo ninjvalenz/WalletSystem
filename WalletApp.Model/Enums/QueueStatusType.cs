@@ -4,11 +4,11 @@ using System.Text;
 
 namespace WalletApp.Model.Enums
 {
-    public enum TransactionTypes
+    public enum QueueStatusType
     {
-        Deposit = 1,
-        Withdraw = 2,
-        Transfer = 3,
-        Refund = 4
+        New = 1,
+        Processing = 2,
+        Success = 3,
+        Failed = 4
     }
 }
