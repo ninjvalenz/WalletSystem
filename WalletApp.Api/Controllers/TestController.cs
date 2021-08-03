@@ -7,8 +7,10 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using WalletApp.Model.Enums;
 using WalletApp.Model.ViewModel;
 using WalletApp.Model.ViewModel.Exceptions;
+using WalletApp.Model.ViewModel.RequestBodyModel;
 using WalletApp.Service.Interface;
 
 namespace WalletApp.Api.Controllers
@@ -20,15 +22,18 @@ namespace WalletApp.Api.Controllers
         private IUserSecurityService userSecurityService;
         private IUserWalletAccountService userWalletAccountService;
         private readonly IConfiguration config;
+        private IWalletTransactionService walletTransactionService;
 
 
         public TestController(IUserSecurityService _userSecurityService,
             IUserWalletAccountService _userWalletAccountService,
-            IConfiguration _config)
+            IConfiguration _config,
+            IWalletTransactionService _walletTransactionService)
         {
             userSecurityService = _userSecurityService;
             userWalletAccountService = _userWalletAccountService;
             config = _config;
+            walletTransactionService = _walletTransactionService;
         }
 
         [HttpPost("testregister")]
@@ -43,6 +48,22 @@ namespace WalletApp.Api.Controllers
                  () => queueResult1 = RegisterUser(model.Login, model.Password),
                  () => queueResult2 = RegisterUser(model.Login, model.Password),
                  () => queueResult3 = RegisterUser(model.Login, model.Password)
+             );
+            return Ok();
+        }
+
+        [HttpPost("testtransfer")]
+        public async Task<IActionResult> TestTransfer([FromBody] NewTransferViewModel model)
+        {
+            QueueResultViewModel queueResult1;
+            QueueResultViewModel queueResult2;
+            QueueResultViewModel queueResult3;
+
+            Parallel.Invoke
+             (
+                 () => queueResult1 = Transfer(model.AccountNumber, model.ToAccountNumber, model.Amount),
+                 () => queueResult2 = Transfer(model.AccountNumber, model.ToAccountNumber, model.Amount),
+                 () => queueResult3 = Transfer(model.AccountNumber, model.ToAccountNumber, model.Amount)
              );
             return Ok();
         }
@@ -73,6 +94,40 @@ namespace WalletApp.Api.Controllers
                 throw new Exception(ex.Message);
             }
 
+        }
+
+        private QueueResultViewModel Transfer(long? accountNo, long? fromAccountNo, decimal? amount)
+        {
+            try
+            {
+                if (!accountNo.HasValue || !fromAccountNo.HasValue || !amount.HasValue)
+                    throw new RequiredFieldsException();
+
+                var result = walletTransactionService.InsertToQueue(
+                    accountNo.Value,
+                    fromAccountNo.Value,
+                    amount.Value,
+                    (int)TransactionTypes.Transfer).Result;
+
+                if (result != null)
+                {
+                    if (result.IsSuccess)
+                        return result;
+
+
+                }
+
+                //if everything fails...
+                throw new ServerProblemException();
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception(ex.Message);
+            }
+            
+
+          
         }
 
 
