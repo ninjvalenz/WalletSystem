@@ -82,8 +82,10 @@ namespace WalletApp.Service
         }
 
         public async Task<DepositMoneyViewModel> DepositMoney(
-            long accountNumber,
-            decimal amount)
+            long accountNumber, 
+            long? fromAccountNumber, 
+            decimal amount, 
+            int transactionTypeId)
         {
             DepositMoneyViewModel depositMoneyViewModel = new DepositMoneyViewModel();
 
@@ -95,7 +97,9 @@ namespace WalletApp.Service
                 var domainResult = await dBService.ExecuteQuery("DepositMoney", new SqlParameter[]
                     {
                         new SqlParameter() { ParameterName = "AccountNumber", Value = accountNumber },
-                        new SqlParameter() { ParameterName = "Amount", Value = amount }
+                        new SqlParameter() { ParameterName = "ToAccountNumber", Value = fromAccountNumber },
+                        new SqlParameter() { ParameterName = "Amount", Value = amount },
+                        new SqlParameter() { ParameterName = "TransactionTypeId", Value = transactionTypeId }
                     }, CommandType.StoredProcedure);
 
                 if (domainResult != null &&
@@ -118,8 +122,8 @@ namespace WalletApp.Service
         }
 
         public async Task<WithdrawMoneyViewModel> WithdrawMoney(
-            long accountNumber,
-            decimal amount)
+             long accountNumber,
+             decimal amount)
         {
             WithdrawMoneyViewModel withdrawMoneyViewModel = new WithdrawMoneyViewModel();
 
@@ -160,20 +164,21 @@ namespace WalletApp.Service
 
         public async Task<TransferMoneyViewModel> TransferMoney(
             long accountNumber, 
-            long toAccountNumber,
+            long fromToAccountNumber,
             decimal amount)
         {
             TransferMoneyViewModel transferMoneyViewModel = new TransferMoneyViewModel();
-
+          
             try
             {
                 if (amount <= 0) throw new TooLowAmountException();
                 if (amount > 99999999) throw new MaximumAllowableAmountException();
 
-                var domainResult = await dBService.ExecuteQuery("TransferMoney", new SqlParameter[]
+                //deduct from source
+                var domainResult = await dBService.ExecuteQuery("Transfer_Deduct", new SqlParameter[]
                     {
                         new SqlParameter() { ParameterName = "AccountNumber", Value = accountNumber },
-                        new SqlParameter() { ParameterName = "ToAccountNumber", Value = toAccountNumber },
+                        new SqlParameter() { ParameterName = "ToAccountNumber", Value = fromToAccountNumber },
                         new SqlParameter() { ParameterName = "Amount", Value = amount }
                     }, CommandType.StoredProcedure);
 
@@ -190,8 +195,23 @@ namespace WalletApp.Service
 
                         transferMoneyViewModel.InfoMessage = $"Success! End balance is now {endBal}";
 
+                        //Proceed to tranfer to destination
+                        var depositResult = await DepositMoney(fromToAccountNumber, accountNumber, amount, (int)TransactionTypes.Deposit);
+
+                        //Refund if not success
+                        if (depositResult != null &&
+                            !depositResult.IsSuccess)
+                        {
+                            await DepositMoney(accountNumber, null, amount, (int)TransactionTypes.Refund);
+                            throw new Exception(depositResult.Message);
+                        }
+
                     }
                 }
+
+                
+
+              
             }
             catch (Exception ex)
             {
@@ -262,7 +282,7 @@ namespace WalletApp.Service
                         //Call transact process for each type (deposit, withdraw, transfer)
                         if ((TransactionTypes)transactionTypeId == TransactionTypes.Deposit)
                         {
-                            var depositResult = await DepositMoney(userWalletAcctNo, amount);
+                            var depositResult = await DepositMoney(userWalletAcctNo, null, amount, transactionTypeId);
                             if(depositResult != null)
                             {
                                 queueItem.Message = depositResult.Message;

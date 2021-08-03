@@ -8,6 +8,7 @@ namespace WalletApp.Model.Enums
     {
         Deposit = 1,
         Withdraw = 2,
-        Transfer = 3
+        Transfer = 3,
+        Refund = 4
     }
 }
