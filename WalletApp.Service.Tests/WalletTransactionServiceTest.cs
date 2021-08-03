@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Text;
+using WalletApp.Model.Enums;
 using WalletApp.Model.ViewModel.Exceptions;
 using WalletApp.Service.ConnectionStrings;
 using WalletApp.Service.Interface;
@@ -116,7 +117,7 @@ namespace WalletApp.Service.Tests
                 .Returns(GenerateSuccessCredit());
 
             //Act
-            var result = service.DepositMoney(It.IsAny<long>(), 99999999).Result;
+            var result = service.DepositMoney(It.IsAny<long>(), null, 99999999, (int)TransactionTypes.Deposit).Result;
 
             //Assert
             Assert.NotNull(result);
@@ -134,7 +135,7 @@ namespace WalletApp.Service.Tests
             dbService.Setup(x => x.ExecuteNonQuery(It.IsAny<string>(), It.IsAny<SqlParameter[]>(), It.IsAny<CommandType>()));
 
             //Act
-            var result = service.DepositMoney(It.IsAny<long>(), -100).Result;
+            var result = service.DepositMoney(It.IsAny<long>(), null, -100, (int)TransactionTypes.Deposit).Result;
 
             //Assert
             Assert.NotNull(result);
@@ -151,7 +152,7 @@ namespace WalletApp.Service.Tests
             dbService.Setup(x => x.ExecuteNonQuery(It.IsAny<string>(), It.IsAny<SqlParameter[]>(), It.IsAny<CommandType>()));
 
             //Act
-            var result = service.DepositMoney(It.IsAny<long>(), 999999999999).Result;
+            var result = service.DepositMoney(It.IsAny<long>(), null, 999999999999, (int)TransactionTypes.Deposit).Result;
 
             //Assert
             Assert.NotNull(result);

@@ -22,6 +22,8 @@ namespace WalletApp.Service.Tests
         public void Setup()
         {
             dbService = new Mock<IDBService>();
+            userWalletAccountService = new Mock<IUserWalletAccountService>();
+                
         }
 
         private IUserSecurityService GetUserSecurityService()

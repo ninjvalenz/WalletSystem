@@ -91,8 +91,8 @@ namespace WalletApp.Service
 
             try
             {
-                if (amount <= 0) throw new TooLowAmountException();
-                if (amount > 99999999) throw new MaximumAllowableAmountException();
+                //if (amount <= 0) throw new TooLowAmountException();
+                //if (amount > 99999999) throw new MaximumAllowableAmountException();
                 
                 var domainResult = await dBService.ExecuteQuery("DepositMoney", new SqlParameter[]
                     {
@@ -129,8 +129,8 @@ namespace WalletApp.Service
 
             try
             {
-                if (amount <= 0) throw new TooLowAmountException();
-                if (amount > 99999999) throw new MaximumAllowableAmountException();
+                //if (amount <= 0) throw new TooLowAmountException();
+                //if (amount > 99999999) throw new MaximumAllowableAmountException();
 
                 var domainResult = await dBService.ExecuteQuery("WithdrawMoney", new SqlParameter[]
                     {
@@ -171,8 +171,8 @@ namespace WalletApp.Service
           
             try
             {
-                if (amount <= 0) throw new TooLowAmountException();
-                if (amount > 99999999) throw new MaximumAllowableAmountException();
+                //if (amount <= 0) throw new TooLowAmountException();
+                //if (amount > 99999999) throw new MaximumAllowableAmountException();
 
                 //deduct from source
                 var domainResult = await dBService.ExecuteQuery("Transfer_Deduct", new SqlParameter[]
@@ -231,6 +231,9 @@ namespace WalletApp.Service
             QueueResultViewModel queueResultViewModel = new QueueResultViewModel();
             try
             {
+                if (amount <= 0) throw new TooLowAmountException();
+                if (amount > 99999999) throw new MaximumAllowableAmountException();
+
                 var domainResult = await dBService.ExecuteQuery("InsertIntoUserWalletTransacQueue",
                     new SqlParameter[]
                     {
