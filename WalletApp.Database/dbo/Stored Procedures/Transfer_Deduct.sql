@@ -19,6 +19,7 @@ BEGIN
 	IF EXISTS(SELECT UserSecurityId FROM UserWalletAccount WHERE AccountNumber = @AccountNumber) AND
 	  EXISTS(SELECT UserSecurityId FROM UserWalletAccount WHERE AccountNumber = @ToAccountNumber)
 	BEGIN
+	    SET @IsExisting = 1
 		EXEC dbo.CheckBalance @AccountNumber, @TotalBalanceFromAcct OUTPUT
 
 		IF(@TotalBalanceFromAcct >= @Amount)
@@ -28,7 +29,7 @@ BEGIN
 
 			SET @FromUserEndBalance = COALESCE(@TotalBalanceFromAcct, 0) - @Amount
 			SET @HasSufficientBal = 1
-			SET @IsExisting = 1
+			
 
 			--deduct record from current account
 			INSERT INTO UserWalletTransaction
