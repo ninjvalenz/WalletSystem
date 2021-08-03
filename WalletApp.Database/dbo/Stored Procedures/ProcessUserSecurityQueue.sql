@@ -19,5 +19,6 @@ BEGIN
 		   [Password]
 	FROM  @QueueTbl tbl
 	INNER JOIN UserSecurityQueue ON tbl.queueId = UserSecurityQueue.QueueId
+	ORDER BY UserSecurityQueue.CreatedDate
    
 END

@@ -20,5 +20,6 @@ BEGIN
 		   Amount
 	FROM  @QueueTbl tbl
 	INNER JOIN UserWalletTransactionQueue ON tbl.queueId = UserWalletTransactionQueue.QueueId
+	ORDER BY UserWalletTransactionQueue.CreatedDate
 
 END

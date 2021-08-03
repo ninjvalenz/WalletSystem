@@ -2,7 +2,9 @@
 CREATE PROCEDURE [dbo].[DepositMoney]
 (
    @AccountNumber bigInt,
-   @Amount decimal(18,8)
+   @ToAccountNumber bigInt = null,
+   @Amount decimal(18,8),
+   @TransactionTypeId int
 )
 AS
 BEGIN
@@ -26,8 +28,8 @@ BEGIN
 			EndBalance
 		)
 		SELECT @AccountNumber,
-		       null,
-			   1,
+		       @ToAccountNumber,
+			   @TransactionTypeId,
 			   @Amount,
 			   GETDATE(),
 			   @EndBalance

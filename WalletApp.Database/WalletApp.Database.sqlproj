@@ -86,5 +86,7 @@
     <Build Include="dbo\Stored Procedures\ProcessUserSecurityQueue.sql" />
     <Build Include="dbo\Stored Procedures\InsertToUserSecurityQueue.sql" />
     <Build Include="dbo\Stored Procedures\InsertIntoUserWalletTransacQueue.sql" />
+    <Build Include="dbo\Stored Procedures\UpdateUserWalletTransactionQueue.sql" />
+    <Build Include="dbo\Stored Procedures\Transfer_Deduct.sql" />
   </ItemGroup>
 </Project>
